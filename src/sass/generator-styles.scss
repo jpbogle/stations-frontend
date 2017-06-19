@@ -1,0 +1,92 @@
+@import url(https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css);
+
+body {
+    margin: 1em;
+}
+a.icon-tile {
+    text-align: center;
+    color: #999;
+    position: relative;
+    height: 20em;
+}
+a.icon-tile:hover {
+    text-decoration: none;
+    color: #e44c16;
+}
+.icon-tile h1 {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-80%);
+}
+.icon-tile h1 i.fa {
+    display: block;
+    margin-bottom: 20px;
+    font-size: 200%;
+}
+/* enable absolute positioning */
+.inner-addon {
+position: relative;
+}
+
+/* style icon */
+.inner-addon .fa {
+    position: absolute;
+    padding: 10px;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* align icon */
+.left-addon .fa  { left:  17px;}
+.right-addon .fa { right: 17px;}
+
+/* add padding  */
+.left-addon input  { padding-left:  30px; }
+.right-addon input { padding-right: 30px; }
+
+nx-header h1 {
+    font-weight: bold;
+}
+
+input {
+    background-color: rgba(255,255,255,0.9);
+    border: none;
+    padding: 8px 25px;
+    border-radius: 2px;
+    border-bottom: 4px solid rgba(0,0,0,0.5);
+    transition: .2s all;
+}
+
+input:focus {
+    outline: none;
+    border-bottom: 4px solid rgba(236, 128, 38, 0.7);
+}
+
+.toast-area {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 30%;
+    min-width: 300px;
+    padding-bottom: 0.3em;
+    margin-right: 0.3em;
+}
+
+.toast-area > .alert {
+    padding: 0.3em;
+    margin-bottom: 0.25em;
+}
+
+select:not([multiple]) {
+    box-sizing: border-box;
+    margin: 0;
+    background-image: linear-gradient(45deg, transparent 50%, #cc3000 65%), linear-gradient(135deg, #cc3000 65%, transparent 50%), linear-gradient(180deg, #fff 0%, #e0e0e0 100%);
+    background-repeat: no-repeat;
+    background-size: 4px 6px, 5px 5px, 100% 100%;
+}
+
+select:not([multiple]).form-control {
+    background-position: calc(100% - 11px) 1em, calc(100% - 6px) 1em, 0 0;
+}

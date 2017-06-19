@@ -1,6 +1,6 @@
-const gulp = require('gulp');
-const wagTasks = require('./wag-gulp-tasks');
-// const debug = require('gulp-debug');
+const gulp = require('gulp'); // `gulp` is a peer dependency
+const wagTasks = require('../index');
+const debug = require('gulp-debug');
 
 const { atomicTasks, compositeTasks, defaultTask } = wagTasks;
 

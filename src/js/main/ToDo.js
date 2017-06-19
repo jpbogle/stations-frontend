@@ -139,7 +139,7 @@ export default class ToDo extends Component {
             backgroundColor: 'rgba(0,0,0,0.1)',
             padding: '50px',
             borderRadius: '10px',
-            height: '80vh',
+            height: '70vh',
             position: 'relative',
         };
 

@@ -1,0 +1,92 @@
+{
+  "_from": "wag-gulp-tasks@0.1.0",
+  "_id": "wag-gulp-tasks@0.1.0",
+  "_inBundle": false,
+  "_integrity": "sha1-1Mua8A7/Jtso3eQVwBaDU/zjEXI=",
+  "_location": "/wag-gulp-tasks",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "wag-gulp-tasks@0.1.0",
+    "name": "wag-gulp-tasks",
+    "escapedName": "wag-gulp-tasks",
+    "rawSpec": "0.1.0",
+    "saveSpec": null,
+    "fetchSpec": "0.1.0"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "http://repo.nibr.novartis.net:80/artifactory/api/npm/npm/wag-gulp-tasks/-/wag-gulp-tasks-0.1.0.tgz",
+  "_shasum": "d4cb9af00eff26db28dde415c0168353fce31172",
+  "_spec": "wag-gulp-tasks@0.1.0",
+  "_where": "/Users/bogleje1/Documents/ToDo",
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Jackson Westeen",
+      "email": "jackson.westeen@novartis.com"
+    },
+    {
+      "name": "Zeke Schmois",
+      "email": "zeke.schmois@novartis.com"
+    }
+  ],
+  "dependencies": {
+    "babel-preset-es2015": "6.24.1",
+    "babel-preset-react": "6.24.1",
+    "babel-preset-stage-0": "6.24.1",
+    "babelify": "7.3.0",
+    "browser-sync": "2.18.11",
+    "browserify": "14.3.0",
+    "gulp-eslint": "3.0.1",
+    "gulp-sass": "3.1.0",
+    "gulp-uglify": "2.1.2",
+    "gulp-util": "3.0.8",
+    "run-sequence": "1.2.2",
+    "vinyl-buffer": "1.0.0",
+    "vinyl-source-stream": "1.1.0",
+    "watchify": "3.9.0"
+  },
+  "deprecated": false,
+  "description": "Core gulp tasks for a WAG based project",
+  "devDependencies": {
+    "chai": "3.5.0",
+    "child-process-promise": "2.2.1",
+    "eslint": "3.19.0",
+    "eslint-config-nxc": "^0.1.7",
+    "gitbook-cli": "2.3.0",
+    "gulp": "3.9.1",
+    "gulp-debug": "3.1.0",
+    "mocha": "3.4.1",
+    "recursive-readdir": "2.2.1",
+    "rimraf": "2.6.1",
+    "yeoman-assert": "3.0.0"
+  },
+  "homepage": "https://bitbucket.org/novartisnibr/wag-gulp-tasks#readme",
+  "main": "index.js",
+  "name": "wag-gulp-tasks",
+  "peerDependencies": {
+    "eslint": "3.19.0",
+    "eslint-config-nxc": "^0.1.7",
+    "gulp": "3.9.1"
+  },
+  "publishConfig": {
+    "registry": "http://repo.nibr.novartis.net/artifactory/api/npm/npm-nibr"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/novartisnibr/wag-gulp-tasks.git"
+  },
+  "scripts": {
+    "docs": "gitbook install && gitbook build . docs-dist",
+    "test": "cd test && mocha *-test.js",
+    "test-build": "cd test && gulp build",
+    "test-bundle": "cd test && gulp bundle",
+    "test-bundle:watch": "cd test && gulp bundle:watch",
+    "test-lint": "cd test && gulp lint",
+    "test-static": "cd test && gulp static"
+  },
+  "version": "0.1.0"
+}

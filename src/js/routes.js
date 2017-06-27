@@ -1,14 +1,13 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
-// import { default as Hello } from './hello/Hello';
-
-import MainView from './main/MainView';
+import Login from './main/Login';
 import NotFound from './common/NotFound';
-import ToDo from './main/ToDo';
+import Main from './main/Main';
 
 export default (
-    <Route path="/" component={MainView}>
-      <IndexRoute component={ToDo} />
-      <Route path="*" component={NotFound} />
+    <Route path="/" component={Main}>
+        <IndexRoute component={Login} />
+        <Route path="/test" component={NotFound} />
+        <Route path="*" component={NotFound} />
     </Route>
 );

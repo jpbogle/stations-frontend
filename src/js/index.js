@@ -13,13 +13,13 @@ require('isomorphic-fetch');
 const { store, history } = createStoreAndHistory();
 
 ReactDOM.render(
-    <Provider  store={store}>
+    <Provider store={store}>
         <div>
-            <Router history={ history}>
+            <Router history={history}>
                 { routes }
             </Router>
             <DevTools />
         </div>
     </Provider>,
-    document.getElementById('content')
+    document.getElementById('content'),
 );

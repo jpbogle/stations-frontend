@@ -1,5 +1,5 @@
 {
-    "extends": "airbnb",
+  "extends": "airbnb",
     "parserOptions": {
         "sourceType": "module",
         "allowImportExportEverywhere": false,
@@ -12,8 +12,13 @@
         "fetch": false
     },
     "rules": {
+        "indent": [ 2, 4 ],
+
+        // react
         "react/prefer-stateless-function": "off",
         "react/no-unused-prop-types": "off",
+        "react/jsx-filename-extension": 0,
+        "react/jsx-indent": [ 2, 4 ],
         "class-methods-use-this": "off",
         "import/no-named-default": "off"
     }

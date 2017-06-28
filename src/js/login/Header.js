@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import Logo from './Logo';
-import * as Colors from './Colors';
+import { showSignIn, showSignUp, showHome } from './loginActions';
+import Logo from '../common/Logo';
+import * as Colors from '../common/Colors';
 
 
 const NavItem = styled.li`
@@ -25,6 +28,7 @@ const SmallHeader = styled.a`
     opacity: ${props => props.shown ? '1' : '0'};
     visibility: ${props => props.shown ? 'visible' : 'collapse'};
     transition: .4s;
+    vertical-align: bottom;
     svg {
         width: 40px;
         margin-top: 6px;
@@ -42,33 +46,40 @@ const NavBar = styled.div`
     }
 `;
 
+const NavBarLinks = styled.ul`
+    display: inline-block;
+    list-style: none;
+    vertical-align: bottom;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+`;
 
-export default class Header extends Component {
+
+export class Header extends Component {
 
     static propTypes = {
         index: PropTypes.bool,
+        showLogo: PropTypes.bool,
         showSignUp: PropTypes.func.isRequired,
         showSignIn: PropTypes.func.isRequired,
-
+        showHome: PropTypes.func.isRequired,
     };
 
     static defaultProps = {
         index: false,
+        showLogo: false,
     }
 
     constructor(props) {
         super(props);
-        this.state = {
-            shown: false,
-        };
-        this.toggleShown = :: this.toggleShown;
+        this.handleClick = :: this.handleClick;
     }
 
-    toggleShown() {
-        this.props.showSignUp();
-        this.setState({
-            shown: !this.state.shown,
-        });
+    handleClick() {
+        if (this.props.signIn || this.props.signUp) {
+            this.props.showHome();
+        };
     }
 
     render() {
@@ -89,22 +100,23 @@ export default class Header extends Component {
         if (this.props.index) {
             navBarLinks = (
                 <ul>
-                    <a id="sign-in-button" onClick={() => this.toggleShown()}><NavItem>SIGN IN</NavItem></a>
-                    <a id="sign-up-button" onClick={() => this.toggleShown()}><NavItem>SIGN UP</NavItem></a>
+                    <a id="sign-in-button" onClick={() => this.props.showSignIn()}><NavItem>SIGN IN</NavItem></a>
+                    <a id="sign-up-button" onClick={() => this.props.showSignUp()}><NavItem>SIGN UP</NavItem></a>
                 </ul>
             );
         }
 
 
         return (
-            <NavBar className="container">
+            <NavBar className="container" onClick={() => this.handleClick()}>
                 <div className="content">
                     <div style={styles.navBarLeft}>
-                        <SmallHeader id="small-header" href="/" shown={this.state.shown}>
+                        <SmallHeader href="/" shown={this.props.showLogo}>
                             <Logo />
                         </SmallHeader>
-                        <ul id="navbar-links">
-                        </ul>
+                        <NavBarLinks>
+                            <a><NavItem></NavItem></a>
+                        </NavBarLinks>
                     </div>
                     <div style={styles.navBarRight}>
                         { navBarLinks }
@@ -114,3 +126,29 @@ export default class Header extends Component {
         );
     }
 }
+
+/**
+ * Maps parts of the global redux store (the state) to props.
+ */
+function mapStateToProps(state) {
+    return {
+        signIn: state.login.signIn.shown,
+        signUp: state.login.signUp.shown,
+        showLogo: state.login.signIn.shown || state.login.signUp.shown,
+    };
+}
+/**
+ * Maps actions and action creators to props. Never directly use
+ * `dispatch` in a component as this hinders unit testing.
+ */
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({
+        showSignIn,
+        showSignUp,
+        showHome,
+    }, dispatch);
+}
+
+// export connected component to be used inside a Provider
+export default connect(mapStateToProps, mapDispatchToProps)(Header);
+

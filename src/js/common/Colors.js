@@ -1,0 +1,9 @@
+export const primaryC = '#9575CD';
+export const highlightC = '#5E35B1';
+export const secondaryC = '#FFD464';
+export const whiteC = '#E5E5E5';
+export const blackC = '#333';
+export const grayC = '#DDD';
+export const pinkC = '#BE8DBF';
+export const spotifyC = '#2ebd59';
+export const spotifyDarkC = '#1e9642';

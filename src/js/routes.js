@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
-import Login from './main/Login';
+import Login from './login/Login';
 import NotFound from './common/NotFound';
 import Main from './main/Main';
 

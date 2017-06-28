@@ -22,7 +22,6 @@ export default class MainView extends Component {
     render() {
         return (
             <div>
-                <Header text="Welcome to MLP" />
                 { this.props.children }
             </div>
         );

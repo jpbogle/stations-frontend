@@ -39,11 +39,19 @@ export default function helloReducer(state = initialState, action) {
                 ...state.signIn,
                 shown: true,
             },
+            signUp: {
+                ...state.signUp,
+                shown: false,
+            },
         };
 
     case SIGN_UP:
         return {
             ...state,
+            signIn: {
+                ...state.signIn,
+                shown: false,
+            },
             signUp: {
                 ...state.signUp,
                 shown: true,

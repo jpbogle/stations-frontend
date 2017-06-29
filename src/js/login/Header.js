@@ -79,16 +79,16 @@ export class Header extends Component {
     }
 
     handleClick() {
-        if (this.props.signIn || this.props.signUp) {
-            this.props.showHome();
-        }
+        this.props.showHome();
     }
 
-    handleSignIn() {
+    handleSignIn(e) {
+        e.stopPropagation();
         this.props.showSignIn();
     }
 
-    handleSignUp() {
+    handleSignUp(e) {
+        e.stopPropagation();
         this.props.showSignUp();
     }
 
@@ -110,8 +110,8 @@ export class Header extends Component {
         if (this.props.index) {
             navBarLinks = (
                 <ul>
-                    <a id="sign-in-button" onClick={() => this.handleSignIn()}><NavItem>SIGN IN</NavItem></a>
-                    <a id="sign-up-button" onClick={() => this.handleSignUp()}><NavItem>SIGN UP</NavItem></a>
+                    <a id="sign-in-button" onClick={e => this.handleSignIn(e)}><NavItem>SIGN IN</NavItem></a>
+                    <a id="sign-up-button" onClick={e => this.handleSignUp(e)}><NavItem>SIGN UP</NavItem></a>
                 </ul>
             );
         }

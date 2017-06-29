@@ -4,7 +4,7 @@ export const SHOW_HOME = 'SHOW_HOME';
 export const CHANGE_GIF = 'CHANGE_GIF';
 export const CHANGE_SIGNIN_VALUE = 'CHANGE_SIGNIN_VALUE';
 export const CHANGE_SIGNUP_VALUE = 'CHANGE_SIGNUP_VALUE';
-export const SUBMIT_LOGIN = 'SUBMIT_LOGIN',
+export const SUBMIT_LOGIN = 'SUBMIT_LOGIN';
 
 export function showSignIn() {
     return {

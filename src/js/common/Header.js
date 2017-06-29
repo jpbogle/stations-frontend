@@ -49,7 +49,6 @@ export default class Header extends Component {
         index: PropTypes.bool,
         showSignUp: PropTypes.func.isRequired,
         showSignIn: PropTypes.func.isRequired,
-
     };
 
     static defaultProps = {

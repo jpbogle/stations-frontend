@@ -9,19 +9,11 @@ import {
 } from './loginActions';
 
 const initialState = {
-    gif: 0,
     signIn: {
         shown: false,
-        username: '',
-        password: '',
     },
     signUp: {
         shown: false,
-        firstName: '',
-        lastName: '',
-        username: '',
-        password: '',
-        confirmPassword: '',
     },
 };
 
@@ -68,30 +60,6 @@ export default function helloReducer(state = initialState, action) {
             signUp: {
                 ...state.signUp,
                 shown: false,
-            },
-        };
-
-    case CHANGE_GIF:
-        return {
-            ...state,
-            gif: payload.gifNumber,
-        };
-
-    case CHANGE_SIGNIN_VALUE:
-        return {
-            ...state,
-            signIn: {
-                ...state.signIn,
-                [payload.type]: payload.value,
-            },
-        };
-
-    case CHANGE_SIGNUP_VALUE:
-        return {
-            ...state,
-            signUp: {
-                ...state.signUp,
-                [payload.type]: payload.value,
             },
         };
 

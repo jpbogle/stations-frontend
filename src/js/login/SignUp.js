@@ -25,7 +25,6 @@ const Button = styled.div`
     border: $primary-c solid 2px;
     border-radius: 3px;
     cursor: pointer;
-    font-weight: 100;
     transition: .2s;
     width: 210px;
     &:hover {
@@ -90,6 +89,7 @@ export class SignUp extends Component {
                 fontSize: '18px',
                 border: `${Colors.grayC} solid 1px`,
                 borderRadius: '3px',
+                fontWeight: '100',
             },
         };
 

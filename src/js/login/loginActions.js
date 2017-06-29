@@ -24,36 +24,6 @@ export function showHome() {
     };
 }
 
-export function changeGif(currentGifNumber) {
-    const gifNumber = currentGifNumber < 3 ? currentGifNumber + 1 : 0;
-    return {
-        type: CHANGE_GIF,
-        payload: {
-            gifNumber,
-        },
-    };
-}
-
-export function changeSignInValue(type, value) {
-    return {
-        type: CHANGE_SIGNIN_VALUE,
-        payload: {
-            type,
-            value,
-        },
-    };
-}
-
-export function changeSignUpValue(type, value) {
-    return {
-        type: CHANGE_SIGNUP_VALUE,
-        payload: {
-            type,
-            value,
-        },
-    };
-}
-
 export function submitLogin() {
     return {
         type: SUBMIT_LOGIN,

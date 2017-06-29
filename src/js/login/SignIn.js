@@ -4,6 +4,8 @@ import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { changeSignInValue } from './loginActions';
+import SpotifyButton from '../common/SpotifyButton';
+import Button from '../common/Button';
 import * as Colors from '../common/Colors';
 
 
@@ -14,24 +16,6 @@ const SignInForm = styled.div`
     position: absolute;
     top: ${props => props.shown ? '67px' : '100vh'};
     transition: .4s;
-`;
-
-const Button = styled.div`
-    font-size: 18px;
-    margin: 16px auto 0px auto;
-    padding: 6px 0px;
-    color: white;
-    background-color: ${Colors.primaryC};
-    border: $primary-c solid 2px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-weight: 100;
-    transition: .2s;
-    width: 210px;
-    &:hover {
-      transform: scale(1.02, 1.02);
-      background-color: $highlight-c;
-      border-color: $highlight-c;
 `;
 
 const Error = styled.li`
@@ -92,6 +76,7 @@ export class SignIn extends Component {
                 fontSize: '18px',
                 border: `${Colors.grayC} solid 1px`,
                 borderRadius: '3px',
+                fontWeight: '100',
             },
 
         };
@@ -125,9 +110,7 @@ export class SignIn extends Component {
                             <Button id="sign-in-submit">sign in</Button>
                         </li>
                         <li>
-                            <Button id="signin-spotify-button">
-                                <span>sign in with</span><div className="spotify-logo" />
-                            </Button>
+                            <SpotifyButton text={'sign in with'} />
                         </li>
                     </form>
                 </div>

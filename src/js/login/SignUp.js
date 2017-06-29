@@ -4,6 +4,8 @@ import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { changeSignUpValue } from './loginActions';
+import SpotifyButton from '../common/SpotifyButton';
+import Button from '../common/Button';
 import * as Colors from '../common/Colors';
 
 
@@ -14,23 +16,6 @@ const SignUpForm = styled.div`
     position: absolute;
     top: ${props => props.shown ? '67px' : '100vh'};
     transition: .4s;
-`;
-
-const Button = styled.div`
-    font-size: 18px;
-    margin: 16px auto 0px auto;
-    padding: 6px 0px;
-    color: white;
-    background-color: ${Colors.primaryC};
-    border: $primary-c solid 2px;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: .2s;
-    width: 210px;
-    &:hover {
-      transform: scale(1.02, 1.02);
-      background-color: $highlight-c;
-      border-color: $highlight-c;
 `;
 
 const Error = styled.li`
@@ -152,9 +137,7 @@ export class SignUp extends Component {
                             <Button id="sign-up-submit">sign up</Button>
                         </li>
                         <li>
-                            <Button id="signup-spotify-button">
-                                <span>sign up with</span><div className="spotify-logo" />
-                            </Button>
+                            <SpotifyButton text={'sign up with'} />
                         </li>
                     </form>
                 </div>

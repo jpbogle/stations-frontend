@@ -65,7 +65,7 @@ export class SignIn extends Component {
     render() {
         const styles = {
             label: {
-                fontWeight: '300',
+                fontWeight: '400',
                 fontSize: '48px',
                 margin: '0',
             },

@@ -45,16 +45,28 @@ export class SignUp extends Component {
     static propTypes = {
         index: PropTypes.bool,
         shown: PropTypes.bool.isRequired,
-        firstName: PropTypes.string.isRequired,
-        lastName: PropTypes.string.isRequired,
-        username: PropTypes.string.isRequired,
-        password: PropTypes.string.isRequired,
-        confirmPassword: PropTypes.string.isRequired,
-        changeSignUpValue: PropTypes.func.isRequired,
     };
 
     static defaultProps = {
         index: true,
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            firstName: '',
+            lastName: '',
+            username: '',
+            password: '',
+            confirmPassword: '',
+        };
+    }
+
+    handleValueChange(e, param) {
+        this.setState({
+            ...this.state,
+            [param]: e.target.value,
+        });
     }
 
     render() {
@@ -94,16 +106,16 @@ export class SignUp extends Component {
                               style={styles.input}
                               type="text"
                               placeholder="first name"
-                              value={this.props.firstName}
-                              onChange={(e) => this.props.changeSignUpValue('firstName', e.target.value)}
+                              value={this.state.firstName}
+                              onChange={e => this.handleValueChange(e, 'firstName')}
                             />
                             <input
                               style={styles.input}
                               type="text"
                               placeholder="last name"
                               name="lastname"
-                              value={this.props.lastName}
-                              onChange={(e) => this.props.changeSignUpValue('lastName', e.target.value)}
+                              value={this.state.lastName}
+                              onChange={e => this.handleValueChange(e, 'lastName')}
                             />
                         </li>
                         <li>
@@ -111,8 +123,8 @@ export class SignUp extends Component {
                               style={styles.input}
                               type="text"
                               placeholder="username"
-                              value={this.props.username}
-                              onChange={(e) => this.props.changeSignUpValue('username', e.target.value)}
+                              value={this.state.username}
+                              onChange={e => this.handleValueChange(e, 'username')}
                             />
                         </li>
                         <Error>username cannot contain special characters</Error>
@@ -121,8 +133,8 @@ export class SignUp extends Component {
                               style={styles.input}
                               type="password"
                               placeholder="password"
-                              value={this.props.password}
-                              onChange={(e) => this.props.changeSignUpValue('password', e.target.value)}
+                              value={this.state.password}
+                              onChange={e => this.handleValueChange(e, 'password')}
                             />
                         </li>
                         <Error>password must be at least 6 characters</Error>
@@ -131,8 +143,8 @@ export class SignUp extends Component {
                               style={styles.input}
                               type="password"
                               placeholder="confirm password"
-                              value={this.props.confirmPassword}
-                              onChange={(e) => this.props.changeSignUpValue('confirmPassword', e.target.value)}
+                              value={this.state.confirmPassword}
+                              onChange={e => this.handleValueChange(e, 'confirmPassword')}
                             />
                         </li>
                         <Error>passwords do not match</Error>
@@ -157,11 +169,6 @@ export class SignUp extends Component {
 function mapStateToProps(state) {
     return {
         shown: state.login.signUp.shown,
-        firstName: state.login.signUp.firstName,
-        lastName: state.login.signUp.lastName,
-        username: state.login.signUp.username,
-        password: state.login.signUp.password,
-        confirmPassword: state.login.signUp.confirmPassword,
     };
 }
 /**
@@ -170,7 +177,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        changeSignUpValue,
+
     }, dispatch);
 }
 

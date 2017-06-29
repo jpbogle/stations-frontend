@@ -45,21 +45,30 @@ export class SignIn extends Component {
     static propTypes = {
         index: PropTypes.bool,
         shown: PropTypes.bool.isRequired,
-        username: PropTypes.string.isRequired,
-        password: PropTypes.string.isRequired,
-        changeSignInValue: PropTypes.func.isRequired,
     };
 
     static defaultProps = {
         index: true,
     }
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            username: '',
+            password: '',
+        };
+    }
+
     handleUsername(e) {
-        this.props.changeSignInValue('username', e.target.value);
+        this.setState({
+            username: e.target.value,
+        });
     }
 
     handlePassword(e) {
-        this.props.changeSignInValue('password', e.target.value);
+        this.setState({
+            password: e.target.value,
+        });
     }
 
     render() {
@@ -98,8 +107,8 @@ export class SignIn extends Component {
                               style={styles.input}
                               type="text"
                               placeholder="username"
-                              value={this.props.username}
-                              onChange={(e) => this.handleUsername(e)}
+                              value={this.state.username}
+                              onChange={e => this.handleUsername(e)}
                             />
                         </li>
                         <li>
@@ -107,8 +116,8 @@ export class SignIn extends Component {
                               style={styles.input}
                               type="password"
                               placeholder="password"
-                              value={this.props.password}
-                              onChange={(e) => this.handlePassword(e)}
+                              value={this.state.password}
+                              onChange={e => this.handlePassword(e)}
                             />
                         </li>
                         <Error error={false}>invalid username or password</Error>
@@ -133,8 +142,6 @@ export class SignIn extends Component {
 function mapStateToProps(state) {
     return {
         shown: state.login.signIn.shown,
-        username: state.login.signIn.username,
-        password: state.login.signIn.password,
     };
 }
 /**
@@ -143,7 +150,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        changeSignInValue,
+
     }, dispatch);
 }
 

@@ -54,8 +54,8 @@ export function changeSignUpValue(type, value) {
     };
 }
 
-export function submitLogin(){
+export function submitLogin() {
     return {
         type: SUBMIT_LOGIN,
-    }
+    };
 }

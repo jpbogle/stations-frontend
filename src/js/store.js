@@ -3,11 +3,13 @@ import { syncHistoryWithStore, routerMiddleware } from 'react-router-redux';
 import { useRouterHistory } from 'react-router';
 
 import thunk from 'redux-thunk';
-import createHistory from 'history/lib/createHashHistory';
+import createHistory from 'react-router/node_modules/history/lib/createHashHistory';
 import reducer from './reducers';
 import DevTools from './common/DevTools';
 
-const history = useRouterHistory(createHistory)();
+const history = useRouterHistory(createHistory)({
+    basename: '/',
+});
 
 export default function createStoreAndHistory(initialState) {
     const store = createStore(

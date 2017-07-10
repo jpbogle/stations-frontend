@@ -76,7 +76,6 @@ export class Login extends Component {
     }
 
     render() {
-        console.log(gifs[this.state.gif]);
         return (
             <div style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
                 <Header index={true} />

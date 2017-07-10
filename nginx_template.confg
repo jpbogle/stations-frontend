@@ -7,17 +7,12 @@ events {
 http {
     include    mime.types;
     default_type  application/octet-stream;
-
     sendfile    on;
-
     keepalive_timeout   65;
 
     server {
         listen    4000;
         server_name  localhost;
-
-        root /Users/Jeremy/Documents/Stations/stations-frontend/dist/app;
-        index index.html index.htm;
 
         location / {
             root /Users/Jeremy/Documents/Stations/stations-frontend/dist/app;

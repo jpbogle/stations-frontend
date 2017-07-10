@@ -3,7 +3,6 @@ import { syncHistoryWithStore, routerMiddleware } from 'react-router-redux';
 import { browserHistory } from 'react-router';
 
 import thunk from 'redux-thunk';
-import createHistory from 'react-router/node_modules/history/lib/createHashHistory';
 import reducer from './reducers';
 import DevTools from './common/DevTools';
 

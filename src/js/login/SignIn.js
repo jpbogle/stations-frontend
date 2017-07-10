@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { browserHistory } from 'react-router';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { changeSignInValue } from './loginActions';
+import { submitLogin } from './loginActions';
 import SpotifyButton from '../common/SpotifyButton';
 import Button from '../common/Button';
 import * as Colors from '../common/Colors';
@@ -29,6 +30,7 @@ export class SignIn extends Component {
     static propTypes = {
         index: PropTypes.bool,
         shown: PropTypes.bool.isRequired,
+        submitLogin: PropTypes.func.isRequired,
     };
 
     static defaultProps = {
@@ -41,6 +43,11 @@ export class SignIn extends Component {
             username: '',
             password: '',
         };
+    }
+
+    handleLogin() {
+        this.props.submitLogin();
+        browserHistory.push('/dashboard');
     }
 
     handleUsername(e) {
@@ -107,7 +114,7 @@ export class SignIn extends Component {
                         </li>
                         <Error error={false}>invalid username or password</Error>
                         <li>
-                            <Button id="sign-in-submit">sign in</Button>
+                            <Button id="sign-in-submit" onClick={() => this.handleLogin()}>sign in</Button>
                         </li>
                         <li>
                             <SpotifyButton text={'sign in with'} />
@@ -133,7 +140,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-
+        submitLogin,
     }, dispatch);
 }
 

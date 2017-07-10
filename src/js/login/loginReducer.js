@@ -2,9 +2,6 @@ import {
     SIGN_IN,
     SIGN_UP,
     SHOW_HOME,
-    CHANGE_GIF,
-    CHANGE_SIGNIN_VALUE,
-    CHANGE_SIGNUP_VALUE,
     SUBMIT_LOGIN,
 } from './loginActions';
 
@@ -15,6 +12,7 @@ const initialState = {
     signUp: {
         shown: false,
     },
+    user: null,
 };
 
 /**
@@ -64,7 +62,14 @@ export default function helloReducer(state = initialState, action) {
         };
 
     case SUBMIT_LOGIN:
-        return state;
+        return {
+            ...state,
+            user: {
+                id: 123,
+                name: 'Jeremy',
+                spotifyUsername: 'jbogle',
+            },
+        };
 
     default:
         return state;

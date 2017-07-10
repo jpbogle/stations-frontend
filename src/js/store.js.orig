@@ -7,7 +7,13 @@ import createHistory from 'react-router/node_modules/history/lib/createHashHisto
 import reducer from './reducers';
 import DevTools from './common/DevTools';
 
+<<<<<<< HEAD
 const history = browserHistory;
+=======
+const history = useRouterHistory(createHistory)({
+    basename: '/',
+});
+>>>>>>> e4dc28521096d8a12e1a13b75560bf6ec236bcb9
 
 export default function createStoreAndHistory(initialState) {
     const store = createStore(

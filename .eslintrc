@@ -20,6 +20,6 @@
         "react/jsx-filename-extension": 0,
         "react/jsx-indent": [ 2, 4 ],
         "class-methods-use-this": "off",
-        "import/no-named-default": "off"
+        "import/no-named-as-default": "off"
     }
 }

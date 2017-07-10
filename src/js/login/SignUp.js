@@ -4,6 +4,8 @@ import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { changeSignUpValue } from './loginActions';
+import SpotifyButton from '../common/SpotifyButton';
+import Button from '../common/Button';
 import * as Colors from '../common/Colors';
 
 
@@ -14,24 +16,6 @@ const SignUpForm = styled.div`
     position: absolute;
     top: ${props => props.shown ? '67px' : '100vh'};
     transition: .4s;
-`;
-
-const Button = styled.div`
-    font-size: 18px;
-    margin: 16px auto 0px auto;
-    padding: 6px 0px;
-    color: white;
-    background-color: ${Colors.primaryC};
-    border: $primary-c solid 2px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-weight: 100;
-    transition: .2s;
-    width: 210px;
-    &:hover {
-      transform: scale(1.02, 1.02);
-      background-color: $highlight-c;
-      border-color: $highlight-c;
 `;
 
 const Error = styled.li`
@@ -45,16 +29,28 @@ export class SignUp extends Component {
     static propTypes = {
         index: PropTypes.bool,
         shown: PropTypes.bool.isRequired,
-        firstName: PropTypes.string.isRequired,
-        lastName: PropTypes.string.isRequired,
-        username: PropTypes.string.isRequired,
-        password: PropTypes.string.isRequired,
-        confirmPassword: PropTypes.string.isRequired,
-        changeSignUpValue: PropTypes.func.isRequired,
     };
 
     static defaultProps = {
         index: true,
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            firstName: '',
+            lastName: '',
+            username: '',
+            password: '',
+            confirmPassword: '',
+        };
+    }
+
+    handleValueChange(e, param) {
+        this.setState({
+            ...this.state,
+            [param]: e.target.value,
+        });
     }
 
     render() {
@@ -78,6 +74,7 @@ export class SignUp extends Component {
                 fontSize: '18px',
                 border: `${Colors.grayC} solid 1px`,
                 borderRadius: '3px',
+                fontWeight: '100',
             },
         };
 
@@ -94,16 +91,16 @@ export class SignUp extends Component {
                               style={styles.input}
                               type="text"
                               placeholder="first name"
-                              value={this.props.firstName}
-                              onChange={(e) => this.props.changeSignUpValue('firstName', e.target.value)}
+                              value={this.state.firstName}
+                              onChange={e => this.handleValueChange(e, 'firstName')}
                             />
                             <input
                               style={styles.input}
                               type="text"
                               placeholder="last name"
                               name="lastname"
-                              value={this.props.lastName}
-                              onChange={(e) => this.props.changeSignUpValue('lastName', e.target.value)}
+                              value={this.state.lastName}
+                              onChange={e => this.handleValueChange(e, 'lastName')}
                             />
                         </li>
                         <li>
@@ -111,8 +108,8 @@ export class SignUp extends Component {
                               style={styles.input}
                               type="text"
                               placeholder="username"
-                              value={this.props.username}
-                              onChange={(e) => this.props.changeSignUpValue('username', e.target.value)}
+                              value={this.state.username}
+                              onChange={e => this.handleValueChange(e, 'username')}
                             />
                         </li>
                         <Error>username cannot contain special characters</Error>
@@ -121,8 +118,8 @@ export class SignUp extends Component {
                               style={styles.input}
                               type="password"
                               placeholder="password"
-                              value={this.props.password}
-                              onChange={(e) => this.props.changeSignUpValue('password', e.target.value)}
+                              value={this.state.password}
+                              onChange={e => this.handleValueChange(e, 'password')}
                             />
                         </li>
                         <Error>password must be at least 6 characters</Error>
@@ -131,8 +128,8 @@ export class SignUp extends Component {
                               style={styles.input}
                               type="password"
                               placeholder="confirm password"
-                              value={this.props.confirmPassword}
-                              onChange={(e) => this.props.changeSignUpValue('confirmPassword', e.target.value)}
+                              value={this.state.confirmPassword}
+                              onChange={e => this.handleValueChange(e, 'confirmPassword')}
                             />
                         </li>
                         <Error>passwords do not match</Error>
@@ -140,9 +137,7 @@ export class SignUp extends Component {
                             <Button id="sign-up-submit">sign up</Button>
                         </li>
                         <li>
-                            <Button id="signup-spotify-button">
-                                <span>sign up with</span><div className="spotify-logo" />
-                            </Button>
+                            <SpotifyButton text={'sign up with'} />
                         </li>
                     </form>
                 </div>
@@ -157,11 +152,6 @@ export class SignUp extends Component {
 function mapStateToProps(state) {
     return {
         shown: state.login.signUp.shown,
-        firstName: state.login.signUp.firstName,
-        lastName: state.login.signUp.lastName,
-        username: state.login.signUp.username,
-        password: state.login.signUp.password,
-        confirmPassword: state.login.signUp.confirmPassword,
     };
 }
 /**
@@ -170,7 +160,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        changeSignUpValue,
+
     }, dispatch);
 }
 

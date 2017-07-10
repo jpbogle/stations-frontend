@@ -45,14 +45,14 @@ const gifs = ['lmfao.gif', 'sorry.gif', 'gangnam.gif', 'thriller.gif'];
 export class Login extends Component {
 
     static propTypes = {
-        gif: PropTypes.number.isRequired,
-        changeGif: PropTypes.func.isRequired,
+
     }
 
     constructor(props) {
         super(props);
         this.state = {
             person: '',
+            gif: 0,
         };
     }
 
@@ -61,20 +61,27 @@ export class Login extends Component {
     }
 
     handleAuth(person) {
-        this.setState({ person });
+        this.setState({
+            ...this.state,
+            person,
+        });
     }
 
     nextGif() {
-        this.props.changeGif(this.props.gif);
+        const nextGif = this.state.gif < 3 ? this.state.gif + 1 : 0;
+        this.setState({
+            ...this.state,
+            gif: nextGif,
+        });
     }
 
     render() {
-        console.log(gifs[this.props.gif]);
+        console.log(gifs[this.state.gif]);
         return (
             <div style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
                 <Header index={true} />
                 <CoverImage
-                  gif={gifs[this.props.gif]}
+                  gif={gifs[this.state.gif]}
                 />
                 <Cover>
                     <div className="content">
@@ -98,7 +105,7 @@ export class Login extends Component {
  */
 function mapStateToProps(state) {
     return {
-        gif: state.login.gif,
+
     };
 }
 /**
@@ -107,7 +114,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        changeGif,
+
     }, dispatch);
 }
 

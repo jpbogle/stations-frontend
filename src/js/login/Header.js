@@ -64,6 +64,8 @@ export class Header extends Component {
         showSignUp: PropTypes.func.isRequired,
         showSignIn: PropTypes.func.isRequired,
         showHome: PropTypes.func.isRequired,
+        signIn: PropTypes.bool.isRequired,
+        signUp: PropTypes.bool.isRequired,
     };
 
     static defaultProps = {
@@ -77,9 +79,17 @@ export class Header extends Component {
     }
 
     handleClick() {
-        if (this.props.signIn || this.props.signUp) {
-            this.props.showHome();
-        };
+        this.props.showHome();
+    }
+
+    handleSignIn(e) {
+        e.stopPropagation();
+        this.props.showSignIn();
+    }
+
+    handleSignUp(e) {
+        e.stopPropagation();
+        this.props.showSignUp();
     }
 
     render() {
@@ -100,8 +110,8 @@ export class Header extends Component {
         if (this.props.index) {
             navBarLinks = (
                 <ul>
-                    <a id="sign-in-button" onClick={() => this.props.showSignIn()}><NavItem>SIGN IN</NavItem></a>
-                    <a id="sign-up-button" onClick={() => this.props.showSignUp()}><NavItem>SIGN UP</NavItem></a>
+                    <a id="sign-in-button" onClick={e => this.handleSignIn(e)}><NavItem>SIGN IN</NavItem></a>
+                    <a id="sign-up-button" onClick={e => this.handleSignUp(e)}><NavItem>SIGN UP</NavItem></a>
                 </ul>
             );
         }

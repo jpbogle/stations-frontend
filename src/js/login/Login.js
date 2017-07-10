@@ -57,7 +57,12 @@ export class Login extends Component {
     }
 
     componentDidMount() {
+        clearInterval(this.gifInterval);
         this.gifInterval = setInterval(() => this.nextGif(), 6850);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.gifInterval);
     }
 
     handleAuth(person) {

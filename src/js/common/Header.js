@@ -37,6 +37,7 @@ const NavBar = styled.div`
     z-index: 10;
     height: 67px;
     top: 0;
+    background-color: ${Colors.highlightC};
     a {
         letter-spacing: 3px;
     }
@@ -47,8 +48,6 @@ export default class Header extends Component {
 
     static propTypes = {
         index: PropTypes.bool,
-        showSignUp: PropTypes.func.isRequired,
-        showSignIn: PropTypes.func.isRequired,
     };
 
     static defaultProps = {
@@ -64,7 +63,6 @@ export default class Header extends Component {
     }
 
     toggleShown() {
-        this.props.showSignUp();
         this.setState({
             shown: !this.state.shown,
         });

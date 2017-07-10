@@ -15,6 +15,7 @@ http {
         server_name  localhost;
 
         location / {
+            #path to the static files
             root /Users/Jeremy/Documents/Stations/stations-frontend/dist/app;
             index index.html index.htm;
 

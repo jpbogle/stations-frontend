@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { signUp } from './loginActions';
 import SpotifyButton from '../common/SpotifyButton';
 import Button from '../common/Button';
+import Loading from '../common/Loading';
 import * as Colors from '../common/Colors';
 
 
@@ -30,6 +31,7 @@ export class SignUp extends Component {
         index: PropTypes.bool,
         shown: PropTypes.bool.isRequired,
         signUp: PropTypes.func.isRequired,
+        loading: PropTypes.bool.isRequired,
         error: PropTypes.shape({
             status: PropTypes.numer,
             text: PropTypes.string,
@@ -97,10 +99,15 @@ export class SignUp extends Component {
 
         const signupDetails = true ? 'complete your login info to sign up with Spotify' : 'create an account to socialize your music';
 
+        let content;
+        if (this.props.loading) {
+            content = (<div style={{ position: 'absolute', right: 'calc(50% - 200px)', top: '-5px' }}><Loading /></div>);
+        }
+
         return (
             <SignUpForm className="container" shown={this.props.shown}>
                 <div style={{ textAlign: 'center' }} className="content">
-                    <h1 style={styles.label}>join stations</h1>
+                    <h1 style={styles.label}>join stations {content}</h1>
                     <span style={styles.details}>{signupDetails}</span>
                     <form style={styles.form}>
                         <li>
@@ -173,6 +180,7 @@ function mapStateToProps(state) {
     return {
         shown: state.login.signUp.shown,
         error: state.login.signUp.error,
+        loading: state.login.loading,
     };
 }
 /**

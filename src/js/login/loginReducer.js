@@ -4,6 +4,7 @@ import {
     SHOW_HOME,
     SET_USER,
     SIGN_UP_ERROR,
+    LOADING,
 } from './loginActions';
 
 const initialState = {
@@ -15,6 +16,7 @@ const initialState = {
         error: null,
     },
     user: null,
+    loading: false,
 };
 
 /**
@@ -24,6 +26,7 @@ const initialState = {
 export default function helloReducer(state = initialState, action) {
     const { payload } = action;
     switch (action.type) {
+
     case SIGN_IN:
         return {
             ...state,
@@ -63,11 +66,17 @@ export default function helloReducer(state = initialState, action) {
             },
         };
 
+    case LOADING:
+        return {
+            ...state,
+            loading: true,
+        }
+
     case SET_USER:
-        console.log(payload.user);
         return {
             ...state,
             user: payload.user,
+            loading: false,
         };
 
     case SIGN_UP_ERROR:
@@ -76,7 +85,8 @@ export default function helloReducer(state = initialState, action) {
             signUp: {
                 ...state.signUp,
                 error: payload.error,
-            }
+            },
+            loading: false,
         };
 
     default:

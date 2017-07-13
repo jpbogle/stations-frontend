@@ -1,5 +1,6 @@
 import { browserHistory } from 'react-router';
 
+export const LOADING = 'LOADING';
 export const SIGN_IN = 'SIGN_IN';
 export const SIGN_UP = 'SIGN_UP';
 export const SHOW_HOME = 'SHOW_HOME';
@@ -8,6 +9,13 @@ export const CHANGE_SIGNIN_VALUE = 'CHANGE_SIGNIN_VALUE';
 export const CHANGE_SIGNUP_VALUE = 'CHANGE_SIGNUP_VALUE';
 export const SET_USER = 'SET_USER';
 export const SIGN_UP_ERROR = 'SIGN_UP_ERROR';
+
+
+export function loading() {
+    return {
+        type: LOADING,
+    };
+}
 
 export function showSignIn() {
     return {
@@ -48,6 +56,7 @@ function signUpError(error) {
 export function signUp(user) {
     return (dispatch) => {
         // Dispatch loading here if we want
+        dispatch(loading());
         return fetch('http://localhost:8080/api/users/create', {
             method: 'POST',
             body: JSON.stringify(user),
@@ -57,7 +66,7 @@ export function signUp(user) {
             const { ok, status, statusText } = res;
             if (ok) {
                 return res.json().then((json) => {
-                    dispatch(setUser(json.User));
+                    setTimeout(() => dispatch(setUser(json.User)), 1000);
                     browserHistory.push('/dashboard');
                 });
             }
@@ -65,12 +74,12 @@ export function signUp(user) {
         })
         .catch((err) => {
             console.log(err);
-            dispatch(signUpError({ status: 500, statusText: err }));
+            setTimeout(() => dispatch(signUpError({ status: 500, statusText: err })), 1000);
         });
     };
 }
 
-// export function submitLogin() {
+// export function login() {
 //     return (dispatch) => {
 //         //Dispatch loading here if we want
 //         return fetch('http://localhost:8080/api/users/create', {

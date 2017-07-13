@@ -21,3 +21,4 @@ export default function createStoreAndHistory(initialState) {
 
     return { store, history: syncedHistory };
 }
+

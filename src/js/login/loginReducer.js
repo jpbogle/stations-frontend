@@ -2,7 +2,8 @@ import {
     SIGN_IN,
     SIGN_UP,
     SHOW_HOME,
-    SUBMIT_LOGIN,
+    SET_USER,
+    SIGN_UP_ERROR,
 } from './loginActions';
 
 const initialState = {
@@ -11,6 +12,7 @@ const initialState = {
     },
     signUp: {
         shown: false,
+        error: null,
     },
     user: null,
 };
@@ -61,14 +63,20 @@ export default function helloReducer(state = initialState, action) {
             },
         };
 
-    case SUBMIT_LOGIN:
+    case SET_USER:
+        console.log(payload.user);
         return {
             ...state,
-            user: {
-                id: 123,
-                name: 'Jeremy',
-                spotifyUsername: 'jbogle',
-            },
+            user: payload.user,
+        };
+
+    case SIGN_UP_ERROR:
+        return {
+            ...state,
+            signUp: {
+                ...state.signUp,
+                error: payload.error,
+            }
         };
 
     default:

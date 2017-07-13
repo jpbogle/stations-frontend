@@ -51,7 +51,6 @@ export class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            person: '',
             gif: 0,
         };
     }
@@ -63,13 +62,6 @@ export class Login extends Component {
 
     componentWillUnmount() {
         clearInterval(this.gifInterval);
-    }
-
-    handleAuth(person) {
-        this.setState({
-            ...this.state,
-            person,
-        });
     }
 
     nextGif() {

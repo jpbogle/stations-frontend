@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { changeSignUpValue } from './loginActions';
+import { signUp } from './loginActions';
 import SpotifyButton from '../common/SpotifyButton';
 import Button from '../common/Button';
 import * as Colors from '../common/Colors';
@@ -29,21 +29,37 @@ export class SignUp extends Component {
     static propTypes = {
         index: PropTypes.bool,
         shown: PropTypes.bool.isRequired,
+        signUp: PropTypes.func.isRequired,
+        error: PropTypes.shape({
+            status: PropTypes.numer,
+            text: PropTypes.string,
+        }),
     };
 
     static defaultProps = {
         index: true,
+        error: null,
     }
 
     constructor(props) {
         super(props);
         this.state = {
-            firstName: '',
-            lastName: '',
             username: '',
+            first_name: '',
+            last_name: '',
             password: '',
             confirmPassword: '',
         };
+        this.handleSignUp = :: this.handleSignUp;
+    }
+
+    handleSignUp() {
+        this.props.signUp({
+            username: this.state.username,
+            first_name: this.state.first_name,
+            last_name: this.state.last_name,
+            password: this.state.password,
+        });
     }
 
     handleValueChange(e, param) {
@@ -72,7 +88,8 @@ export class SignUp extends Component {
                 padding: '8px 10px',
                 margin: '4px',
                 fontSize: '18px',
-                border: `${Colors.grayC} solid 1px`,
+                border: 'solid 1px',
+                borderColor: Colors.grayC,
                 borderRadius: '3px',
                 fontWeight: '100',
             },
@@ -91,21 +108,24 @@ export class SignUp extends Component {
                               style={styles.input}
                               type="text"
                               placeholder="first name"
-                              value={this.state.firstName}
-                              onChange={e => this.handleValueChange(e, 'firstName')}
+                              value={this.state.first_name}
+                              onChange={e => this.handleValueChange(e, 'first_name')}
                             />
                             <input
                               style={styles.input}
                               type="text"
                               placeholder="last name"
                               name="lastname"
-                              value={this.state.lastName}
-                              onChange={e => this.handleValueChange(e, 'lastName')}
+                              value={this.state.last_name}
+                              onChange={e => this.handleValueChange(e, 'last_name')}
                             />
                         </li>
                         <li>
                             <input
-                              style={styles.input}
+                              style={{
+                                  ...styles.input,
+                                  borderColor: this.props.error ? 'red' : Colors.grayC,
+                              }}
                               type="text"
                               placeholder="username"
                               value={this.state.username}
@@ -134,7 +154,7 @@ export class SignUp extends Component {
                         </li>
                         <Error>passwords do not match</Error>
                         <li>
-                            <Button id="sign-up-submit">sign up</Button>
+                            <Button onClick={() => this.handleSignUp()}>sign up</Button>
                         </li>
                         <li>
                             <SpotifyButton text={'sign up with'} />
@@ -152,6 +172,7 @@ export class SignUp extends Component {
 function mapStateToProps(state) {
     return {
         shown: state.login.signUp.shown,
+        error: state.login.signUp.error,
     };
 }
 /**
@@ -160,7 +181,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-
+        signUp,
     }, dispatch);
 }
 

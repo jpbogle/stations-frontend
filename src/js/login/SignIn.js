@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { browserHistory } from 'react-router';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { submitLogin } from './loginActions';
+import { signUp } from './loginActions';
 import SpotifyButton from '../common/SpotifyButton';
 import Button from '../common/Button';
 import * as Colors from '../common/Colors';
@@ -30,11 +29,16 @@ export class SignIn extends Component {
     static propTypes = {
         index: PropTypes.bool,
         shown: PropTypes.bool.isRequired,
-        submitLogin: PropTypes.func.isRequired,
+        login: PropTypes.func.isRequired,
+        error: PropTypes.shape({
+            status: PropTypes.numer,
+            text: PropTypes.string,
+        }),
     };
 
     static defaultProps = {
         index: true,
+        error: null,
     }
 
     constructor(props) {
@@ -46,8 +50,7 @@ export class SignIn extends Component {
     }
 
     handleLogin() {
-        this.props.submitLogin();
-        browserHistory.push('/dashboard');
+        this.props.login();
     }
 
     handleUsername(e) {
@@ -81,7 +84,8 @@ export class SignIn extends Component {
                 padding: '8px 10px',
                 margin: '4px',
                 fontSize: '18px',
-                border: `${Colors.grayC} solid 1px`,
+                border: 'solid 1px',
+                borderColor: this.props.error ? 'red' : Colors.grayC,
                 borderRadius: '3px',
                 fontWeight: '100',
             },
@@ -131,6 +135,7 @@ export class SignIn extends Component {
  */
 function mapStateToProps(state) {
     return {
+        error: state.login.signIn.error,
         shown: state.login.signIn.shown,
     };
 }
@@ -140,7 +145,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        submitLogin,
+        login: signUp,
     }, dispatch);
 }
 

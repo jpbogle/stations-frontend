@@ -48,14 +48,16 @@ function signUpError(error) {
     return {
         type: SIGN_UP_ERROR,
         payload: {
-            error,
+            error: {
+                status: error.status,
+                statusText: error.statusText.message,
+            },
         },
     };
 }
 
 export function signUp(user) {
     return (dispatch) => {
-        // Dispatch loading here if we want
         dispatch(loading());
         return fetch('http://localhost:8080/api/users/create', {
             method: 'POST',
@@ -66,14 +68,15 @@ export function signUp(user) {
             const { ok, status, statusText } = res;
             if (ok) {
                 return res.json().then((json) => {
-                    setTimeout(() => dispatch(setUser(json.User)), 1000);
-                    browserHistory.push('/dashboard');
+                    setTimeout(() => {
+                        dispatch(setUser(json.User));
+                        browserHistory.push('/dashboard');
+                    }, 1000);
                 });
             }
             return dispatch(signUpError({ status, statusText }));
         })
         .catch((err) => {
-            console.log(err);
             setTimeout(() => dispatch(signUpError({ status: 500, statusText: err })), 1000);
         });
     };

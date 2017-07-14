@@ -19,6 +19,16 @@ const SignUpForm = styled.div`
     transition: .4s;
 `;
 
+const Input = styled.input`
+    padding: 8px 10px;
+    margin: 4px;
+    font-size: 18px;
+    border: solid 1px;
+    border-color: ${props => props.error ? 'red' : Colors.grayC};
+    border-radius: 3px;
+    font-weight: 100;
+`;
+
 const Error = styled.li`
     color: red;
     margin: 2px;
@@ -34,7 +44,7 @@ export class SignUp extends Component {
         loading: PropTypes.bool.isRequired,
         error: PropTypes.shape({
             status: PropTypes.numer,
-            text: PropTypes.string,
+            statusText: PropTypes.string,
         }),
     };
 
@@ -51,17 +61,46 @@ export class SignUp extends Component {
             last_name: '',
             password: '',
             confirmPassword: '',
+            error: {
+                status: 200,
+                statusText: '',
+            },
         };
         this.handleSignUp = :: this.handleSignUp;
     }
 
-    handleSignUp() {
-        this.props.signUp({
-            username: this.state.username,
-            first_name: this.state.first_name,
-            last_name: this.state.last_name,
-            password: this.state.password,
+    componentWillReceiveProps(props) {
+        this.setState({
+            ...this.state,
+            error: props.error,
         });
+    }
+
+    handleSignUp() {
+        if (this.state.password !== this.state.confirmPassword) {
+            this.setState({
+                ...this.state,
+                error: {
+                    status: 2,
+                    statusText: 'passwords do not match',
+                },
+            });
+        } else if (this.state.password.length < 6) {
+            this.setState({
+                ...this.state,
+                error: {
+                    status: 1,
+                    statusText: 'passwords must be 6 characters in length',
+                },
+            });
+        } else {
+            this.props.signUp({
+                username: this.state.username,
+                first_name: this.state.first_name,
+                last_name: this.state.last_name,
+                password: this.state.password,
+            });
+        }
     }
 
     handleValueChange(e, param) {
@@ -72,6 +111,7 @@ export class SignUp extends Component {
     }
 
     render() {
+        const { error } = this.state;
         const styles = {
             label: {
                 fontWeight: '400',
@@ -86,15 +126,6 @@ export class SignUp extends Component {
                 listStyleType: 'none',
                 padding: '0',
             },
-            input: {
-                padding: '8px 10px',
-                margin: '4px',
-                fontSize: '18px',
-                border: 'solid 1px',
-                borderColor: Colors.grayC,
-                borderRadius: '3px',
-                fontWeight: '100',
-            },
         };
 
         const signupDetails = true ? 'complete your login info to sign up with Spotify' : 'create an account to socialize your music';
@@ -103,7 +134,6 @@ export class SignUp extends Component {
         if (this.props.loading) {
             content = (<div style={{ position: 'absolute', right: 'calc(50% - 200px)', top: '-5px' }}><Loading /></div>);
         }
-
         return (
             <SignUpForm className="container" shown={this.props.shown}>
                 <div style={{ textAlign: 'center' }} className="content">
@@ -111,15 +141,13 @@ export class SignUp extends Component {
                     <span style={styles.details}>{signupDetails}</span>
                     <form style={styles.form}>
                         <li>
-                            <input
-                              style={styles.input}
+                            <Input
                               type="text"
                               placeholder="first name"
                               value={this.state.first_name}
                               onChange={e => this.handleValueChange(e, 'first_name')}
                             />
-                            <input
-                              style={styles.input}
+                            <Input
                               type="text"
                               placeholder="last name"
                               name="lastname"
@@ -128,38 +156,35 @@ export class SignUp extends Component {
                             />
                         </li>
                         <li>
-                            <input
-                              style={{
-                                  ...styles.input,
-                                  borderColor: this.props.error ? 'red' : Colors.grayC,
-                              }}
+                            <Input
+                              error={error.status === 500}
                               type="text"
                               placeholder="username"
                               value={this.state.username}
                               onChange={e => this.handleValueChange(e, 'username')}
                             />
                         </li>
-                        <Error>username cannot contain special characters</Error>
+                        <Error error={error.status === 500}>username already taken</Error>
                         <li>
-                            <input
-                              style={styles.input}
+                            <Input
+                              error={error.status === 2 || error.status === 1}
                               type="password"
                               placeholder="password"
                               value={this.state.password}
                               onChange={e => this.handleValueChange(e, 'password')}
                             />
                         </li>
-                        <Error>password must be at least 6 characters</Error>
+                        <Error error={error.status === 1}>password must be at least 6 characters</Error>
                         <li>
-                            <input
-                              style={styles.input}
+                            <Input
+                              error={error.status === 2}
                               type="password"
                               placeholder="confirm password"
                               value={this.state.confirmPassword}
                               onChange={e => this.handleValueChange(e, 'confirmPassword')}
                             />
                         </li>
-                        <Error>passwords do not match</Error>
+                        <Error error={error.status === 2}>passwords do not match</Error>
                         <li>
                             <Button onClick={() => this.handleSignUp()}>sign up</Button>
                         </li>

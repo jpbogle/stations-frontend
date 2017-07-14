@@ -13,7 +13,10 @@ const initialState = {
     },
     signUp: {
         shown: false,
-        error: null,
+        error: {
+            status: 200,
+            statusText: '',
+        },
     },
     user: null,
     loading: false,
@@ -70,7 +73,14 @@ export default function helloReducer(state = initialState, action) {
         return {
             ...state,
             loading: true,
-        }
+            signUp: {
+                ...state.signUp,
+                error: {
+                    status: 200,
+                    statusText: '',
+                },
+            },
+        };
 
     case SET_USER:
         return {

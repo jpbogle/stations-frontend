@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { signUp } from './loginActions';
+import { login } from './loginActions';
+import Loading from '../common/Loading';
 import SpotifyButton from '../common/SpotifyButton';
 import Button from '../common/Button';
 import * as Colors from '../common/Colors';
@@ -18,6 +19,16 @@ const SignInForm = styled.div`
     transition: .4s;
 `;
 
+const Input = styled.input`
+    padding: 8px 10px;
+    margin: 4px;
+    font-size: 18px;
+    border: solid 1px;
+    border-color: ${props => props.error ? 'red' : Colors.grayC};
+    border-radius: 3px;
+    font-weight: 100;
+`;
+
 const Error = styled.li`
     color: red;
     margin: 2px;
@@ -30,15 +41,15 @@ export class SignIn extends Component {
         index: PropTypes.bool,
         shown: PropTypes.bool.isRequired,
         login: PropTypes.func.isRequired,
+        loading: PropTypes.bool.isRequired,
         error: PropTypes.shape({
             status: PropTypes.numer,
-            text: PropTypes.string,
-        }),
+            statusText: PropTypes.string,
+        }).isRequired,
     };
 
     static defaultProps = {
         index: true,
-        error: null,
     }
 
     constructor(props) {
@@ -50,7 +61,10 @@ export class SignIn extends Component {
     }
 
     handleLogin() {
-        this.props.login();
+        this.props.login({
+            username: this.state.username,
+            password: this.state.password,
+        });
     }
 
     handleUsername(e) {
@@ -66,6 +80,7 @@ export class SignIn extends Component {
     }
 
     render() {
+        console.log(this.props.error);
         const styles = {
             label: {
                 fontWeight: '400',
@@ -91,16 +106,19 @@ export class SignIn extends Component {
             },
 
         };
-
+        let content;
+        if (this.props.loading) {
+            content = (<div style={{ position: 'absolute', right: 'calc(50% - 250px)', top: '-5px' }}><Loading /></div>);
+        }
         return (
             <SignInForm className="container" shown={this.props.shown}>
                 <div style={{ textAlign: 'center' }} className="content">
-                    <h1 style={styles.label}>log in to stations</h1>
+                    <h1 style={styles.label}>log in to stations{content}</h1>
                     <span style={styles.details}>and keep the music going</span>
                     <form style={styles.form}>
                         <li>
-                            <input
-                              style={styles.input}
+                            <Input
+                              error={this.props.error.status !== 200}
                               type="text"
                               placeholder="username"
                               value={this.state.username}
@@ -108,15 +126,15 @@ export class SignIn extends Component {
                             />
                         </li>
                         <li>
-                            <input
-                              style={styles.input}
+                            <Input
+                              error={this.props.error.status !== 200}
                               type="password"
                               placeholder="password"
                               value={this.state.password}
                               onChange={e => this.handlePassword(e)}
                             />
                         </li>
-                        <Error error={false}>invalid username or password</Error>
+                        <Error error={this.props.error.status !== 200}>invalid username or password</Error>
                         <li>
                             <Button id="sign-in-submit" onClick={() => this.handleLogin()}>sign in</Button>
                         </li>
@@ -137,6 +155,7 @@ function mapStateToProps(state) {
     return {
         error: state.login.signIn.error,
         shown: state.login.signIn.shown,
+        loading: state.login.loading,
     };
 }
 /**
@@ -145,7 +164,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        login: signUp,
+        login,
     }, dispatch);
 }
 

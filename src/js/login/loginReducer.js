@@ -5,11 +5,16 @@ import {
     SET_USER,
     SIGN_UP_ERROR,
     LOADING,
+    LOGIN_ERROR,
 } from './loginActions';
 
 const initialState = {
     signIn: {
         shown: false,
+        error: {
+            status: 200,
+            statusText: '',
+        },
     },
     signUp: {
         shown: false,
@@ -94,6 +99,16 @@ export default function helloReducer(state = initialState, action) {
             ...state,
             signUp: {
                 ...state.signUp,
+                error: payload.error,
+            },
+            loading: false,
+        };
+
+    case LOGIN_ERROR:
+        return {
+            ...state,
+            signIn: {
+                ...state.signIn,
                 error: payload.error,
             },
             loading: false,

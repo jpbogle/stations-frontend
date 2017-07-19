@@ -48,10 +48,7 @@ function signUpError(error) {
     return {
         type: SIGN_UP_ERROR,
         payload: {
-            error: {
-                status: error.status,
-                statusText: error.statusText.message,
-            },
+            error,
         },
     };
 }
@@ -60,10 +57,7 @@ function loginError(error) {
     return {
         type: LOGIN_ERROR,
         payload: {
-            error: {
-                status: error.status,
-                statusText: error.statusText.message,
-            },
+            error,
         },
     };
 }
@@ -77,19 +71,26 @@ export function signUp(user) {
             mode: 'cors',
         })
         .then((res) => {
-            const { ok, status, statusText } = res;
-            if (ok) {
-                return res.json().then((json) => {
+            return res.json().then((json) => {
+                if (res.ok) {
                     setTimeout(() => {
                         dispatch(setUser(json.User));
                         browserHistory.push('/dashboard');
                     }, 1000);
-                });
-            }
-            return dispatch(signUpError({ status, statusText }));
+                } else {
+                    const error = {
+                        status: res.status,
+                        type: json.error_type,
+                        message: json.error_message,
+                    };
+                    setTimeout(() => {
+                        dispatch(signUpError(error));
+                    }, 1000);
+                }
+            });
         })
         .catch((err) => {
-            setTimeout(() => dispatch(signUpError({ status: 500, statusText: err })), 1000);
+            setTimeout(() => dispatch(signUpError({ status: 500, type: 'Internal server error', message: err })), 1000);
         });
     };
 }
@@ -103,22 +104,26 @@ export function login(user) {
             mode: 'cors',
         })
         .then((res) => {
-            const { ok, status, statusText } = res;
-            console.log(ok, status, statusText)
-            if (ok) {
-                return res.json().then((json) => {
+            return res.json().then((json) => {
+                if (res.ok) {
                     setTimeout(() => {
-                        dispatch(setUser(json.User));
+                        dispatch(setUser(json.user));
                         browserHistory.push('/dashboard');
                     }, 1000);
-                });
-            }
-            console.log(status, statusText)
-            return dispatch(loginError({ status, statusText }));
+                } else {
+                    const error = {
+                        status: res.status,
+                        type: json.error_type,
+                        message: json.error_message,
+                    };
+                    setTimeout(() => {
+                        dispatch(loginError(error));
+                    }, 1000);
+                }
+            });
         })
         .catch((err) => {
-            console.log('errr')
-            setTimeout(() => dispatch(loginError({ status: 500, statusText: err })), 1000);
+            setTimeout(() => dispatch(loginError({ status: 500, type: 'Internal server error', message: err })), 1000);
         });
     };
 }

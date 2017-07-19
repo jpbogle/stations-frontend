@@ -34,7 +34,7 @@ const SmallHeader = styled.a`
 
 const NavBar = styled.div`
     position: fixed;
-    z-index: 10;
+    z-index: 1;
     height: 67px;
     top: 0;
     background-color: ${Colors.highlightC};

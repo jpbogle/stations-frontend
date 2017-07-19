@@ -80,7 +80,6 @@ export class SignIn extends Component {
     }
 
     render() {
-        console.log(this.props.error);
         const styles = {
             label: {
                 fontWeight: '400',
@@ -115,7 +114,20 @@ export class SignIn extends Component {
                 <div style={{ textAlign: 'center' }} className="content">
                     <h1 style={styles.label}>log in to stations{content}</h1>
                     <span style={styles.details}>and keep the music going</span>
-                    <form style={styles.form}>
+                    <form
+                      style={styles.form}
+                      onSubmit={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          this.handleLogin();
+                      }}
+                      onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                              e.preventDefault();
+                              this.handleLogin();
+                          }
+                      }}
+                    >
                         <li>
                             <Input
                               error={this.props.error.status !== 200}

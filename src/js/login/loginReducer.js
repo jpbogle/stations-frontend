@@ -8,20 +8,20 @@ import {
     LOGIN_ERROR,
 } from './loginActions';
 
+const noError = {
+    status: 200,
+    type: '',
+    message: '',
+};
+
 const initialState = {
     signIn: {
         shown: false,
-        error: {
-            status: 200,
-            statusText: '',
-        },
+        error: noError,
     },
     signUp: {
         shown: false,
-        error: {
-            status: 200,
-            statusText: '',
-        },
+        error: noError,
     },
     user: null,
     loading: false,
@@ -80,10 +80,11 @@ export default function helloReducer(state = initialState, action) {
             loading: true,
             signUp: {
                 ...state.signUp,
-                error: {
-                    status: 200,
-                    statusText: '',
-                },
+                error: noError,
+            },
+            signIn: {
+                ...state.signIn,
+                error: noError,
             },
         };
 

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
+import { getStation } from './stationActions';
 import Header from '../common/Header';
 import Player from './Player';
 import * as Colors from '../common/Colors';
@@ -72,6 +73,11 @@ class Station extends Component {
     static propTypes = {
         stationName: PropTypes.string.isRequired,
         stationHost: PropTypes.string.isRequired,
+        getStation: PropTypes.func.isRequired,
+    }
+
+    componentWillMount() {
+        this.props.getStation(this.props.stationHost);
     }
 
     render() {
@@ -129,7 +135,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-
+        getStation,
     }, dispatch);
 }
 

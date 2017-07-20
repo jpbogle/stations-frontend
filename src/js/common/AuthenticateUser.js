@@ -14,15 +14,16 @@ class AuthenticateUser extends Component {
 
     componentDidMount() {
         const { user } = this.props;
-        if (user === null) {
-            // set redirect URL in state if we want to redirect
-            // to the place the user was going before requiring auth
-            // setRedirectUrl(currentURL);
-            browserHistory.replace('/');
-        }
+        // if (user === null) {
+        //     // set redirect URL in state if we want to redirect
+        //     // to the place the user was going before requiring auth
+        //     // setRedirectUrl(currentURL);
+        //     browserHistory.replace('/');
+        // }
     }
 
     render() {
+        return this.props.children;
         if (this.props.user != null) {
             return this.props.children;
         }

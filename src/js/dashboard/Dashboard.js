@@ -92,7 +92,7 @@ class Dashboard extends Component {
         return (
             <div>
                 <Header />
-                <div style={{ height: 'calc(100vh - 79px)', borderBottom: 'solid #9575CD 12px', marginTop: '67px' }}>
+                <div style={{ height: 'calc(100vh - 79px)', borderBottom: 'solid #9575CD 12px' }}>
                     <div className="container" style={{ height: '180px' }}>
                         <div className="content" style={{ paddingLeft: '12px', paddingRight: '12px' }}>
                             <div style={{ float: 'left' }}>
@@ -105,7 +105,7 @@ class Dashboard extends Component {
                         </div>
                     </div>
 
-                    <div style={{ minHeight: 'calc(100vh - 259px)', backgroundColor: '#eee' }}>
+                    <div style={{ minHeight: 'calc(100vh - 192px)', backgroundColor: '#eee' }}>
                         <div className="content">
                             <h1>stations</h1>
                             {stations}

@@ -12,8 +12,8 @@ export default (
         <IndexRoute component={Login} />
         <Route component={AuthenticateUser}>
             <Route path="dashboard" component={Dashboard} />
-            <Route path=":username/:stationName" component={Station} />
         </Route>
+        <Route path=":username/:stationName" component={Station} />
         <Route path="*" component={NotFound} />
     </Route>
 );

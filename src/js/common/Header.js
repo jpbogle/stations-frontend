@@ -33,11 +33,10 @@ const SmallHeader = styled.a`
 `;
 
 const NavBar = styled.div`
-    position: fixed;
-    z-index: 1;
+    z-index: 10;
     height: 67px;
     top: 0;
-    background-color: ${Colors.highlightC};
+    background-color: ${Colors.primaryC};
     a {
         letter-spacing: 3px;
     }

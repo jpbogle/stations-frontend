@@ -1,7 +1,11 @@
 import {
-    LOADING,
+    LOADING_STATION,
+    LOADING_SEARCH,
     SET_STATION,
     STATION_ERROR,
+    SPOTIFY_ERROR,
+    SOUNDCLOUD_ERROR,
+    APPLEMUSIC_ERROR,
 } from './stationActions';
 
 const noError = {
@@ -11,9 +15,26 @@ const noError = {
 };
 
 const initialState = {
-    station: null,
-    loading: false,
+    station: {},
+    loading: true,
     error: noError,
+    search: {
+        spotify: {
+            loading: false,
+            error: noError,
+            songs: [],
+        },
+        soundcloud: {
+            loading: false,
+            error: noError,
+            songs: [],
+        },
+        appleMusic: {
+            loading: false,
+            error: noError,
+            songs: [],
+        },
+    },
 };
 
 /**
@@ -28,9 +49,10 @@ export default function helloReducer(state = initialState, action) {
         return {
             ...state,
             station: payload.station,
+            loading: false,
         };
 
-    case LOADING:
+    case LOADING_STATION:
         return {
             ...state,
             loading: true,
@@ -42,6 +64,52 @@ export default function helloReducer(state = initialState, action) {
             error: payload.error,
         };
 
+    case LOADING_SEARCH:
+        return {
+            ...state,
+            search: {
+                ...state.search,
+                loading: true,
+            },
+        };
+    case SPOTIFY_ERROR:
+        return {
+            ...state,
+            search: {
+                ...state.search,
+                spotify: {
+                    loading: false,
+                    error: payload.error,
+                    songs: [],
+                },
+            },
+        };
+
+    case SOUNDCLOUD_ERROR:
+        return {
+            ...state,
+            search: {
+                ...state.search,
+                soundcloud: {
+                    loading: false,
+                    error: payload.error,
+                    songs: [],
+                },
+            },
+        };
+
+    case APPLEMUSIC_ERROR:
+        return {
+            ...state,
+            search: {
+                ...state.search,
+                appleMusic: {
+                    loading: false,
+                    error: payload.error,
+                    songs: [],
+                },
+            },
+        };
     default:
         return state;
     }

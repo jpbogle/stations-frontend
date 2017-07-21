@@ -1,3 +1,4 @@
+import { browserHistory } from 'react-router';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -69,15 +70,29 @@ class Dashboard extends Component {
         this.props.createStation(this.props.user.username, stationName);
     }
 
+    goToStation(stationRoute) {
+        browserHistory.push(stationRoute);
+    }
+
     mapStations(stations) {
-        return stations.map(station => (
-            <StationSmall
-              name={station.name}
-              albumCover={station.songs ? station.songs[0].song.album_cover : ''}
-              numSongs={station.songs ? station.songs.length : 0}
-              numAdmins={stations.admins ? station.admins.length : 0}
-            />
-        ));
+        let key = 0;
+        return stations.map((station) => {
+            key += 1;
+            return (
+                <div
+                  role="presentation"
+                  onClick={() => this.goToStation(`/${this.props.user.username}/${station.name}`)}
+                  key={key}
+                >
+                    <StationSmall
+                      name={station.name}
+                      albumCover={station.songs.length > 0 ? station.songs[0].album_cover : ''}
+                      numSongs={station.songs ? station.songs.length : 0}
+                      numAdmins={stations.admins ? station.admins.length : 0}
+                    />
+                </div>
+            );
+        });
     }
 
     render() {
@@ -86,9 +101,12 @@ class Dashboard extends Component {
         const stations = user.stations == null ? '' : this.mapStations(user.stations);
 
         const headshot = user.imageurl.length === 0 ?
-            <HeadshotFiller className="fa fa-user fa-5x" />:
+            <HeadshotFiller className="fa fa-user fa-5x" /> :
             <Headshot alt="profile" src={user.imageurl} />;
 
+        const styles = {
+
+        };
         return (
             <div>
                 <Header />
@@ -105,11 +123,11 @@ class Dashboard extends Component {
                         </div>
                     </div>
 
-                    <div style={{ minHeight: 'calc(100vh - 192px)', backgroundColor: '#eee' }}>
+                    <div style={{ height: 'calc(100vh - 259px)', backgroundColor: '#eee', overflow: 'scroll' }}>
                         <div className="content">
                             <h1>stations</h1>
                             {stations}
-                            <div onClick={this.showCreate}>
+                            <div role="presentation" onClick={this.showCreate}>
                                 <CreateStation />
                             </div>
                         </div>

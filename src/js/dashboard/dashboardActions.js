@@ -35,7 +35,6 @@ export function createStation(username, stationName) {
         .then((res) => {
             return res.json().then((json) => {
                 if (res.ok) {
-                    console.log(res)
                     dispatch(setStation(json.station));
                     browserHistory.push(`/${username}/${json.station.name}`);
                 } else {

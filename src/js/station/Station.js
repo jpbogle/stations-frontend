@@ -69,7 +69,7 @@ class Station extends Component {
 
         return (
             <div>
-                <Header />
+                <Header admin logoAnimate station={this.props.stationName} />
                 <Search />
                 <HostHeader shown={true}>
                     <div>

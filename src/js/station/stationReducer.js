@@ -4,6 +4,7 @@ import {
     SET_STATION,
     STATION_ERROR,
     SPOTIFY_ERROR,
+    SET_SOUNDCLOUD_SONGS,
     SOUNDCLOUD_ERROR,
     APPLEMUSIC_ERROR,
 } from './stationActions';
@@ -23,16 +24,19 @@ const initialState = {
             loading: false,
             error: noError,
             songs: [],
+            query: '',
         },
         soundcloud: {
             loading: false,
             error: noError,
             songs: [],
+            query: '',
         },
         appleMusic: {
             loading: false,
             error: noError,
             songs: [],
+            query: '',
         },
     },
 };
@@ -81,6 +85,20 @@ export default function helloReducer(state = initialState, action) {
                     loading: false,
                     error: payload.error,
                     songs: [],
+                },
+            },
+        };
+
+    case SET_SOUNDCLOUD_SONGS:
+        return {
+            ...state,
+            search: {
+                ...state.search,
+                soundcloud: {
+                    loading: false,
+                    error: noError,
+                    songs: payload.songs,
+                    query: payload.query,
                 },
             },
         };

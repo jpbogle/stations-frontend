@@ -109,7 +109,7 @@ class Dashboard extends Component {
         };
         return (
             <div>
-                <Header />
+                <Header dashboard />
                 <div style={{ height: 'calc(100vh - 79px)', borderBottom: 'solid #9575CD 12px' }}>
                     <div className="container" style={{ height: '180px' }}>
                         <div className="content" style={{ paddingLeft: '12px', paddingRight: '12px' }}>

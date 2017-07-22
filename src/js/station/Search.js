@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
 import SearchItem from './SearchItem';
-import { search } from './stationActions';
+import { searchAll, searchSoundcloud } from './stationActions';
 import * as Colors from '../common/Colors';
 
 const SearchBox = styled.div`
@@ -38,12 +38,13 @@ const SearchBox = styled.div`
 class Search extends Component {
 
     static propTypes = {
-        songs: PropTypes.array,
-        search: PropTypes.func.isRequired,
+        searchAll: PropTypes.func.isRequired,
+        searchSoundcloud: PropTypes.func.isRequired,
+        results: PropTypes.object,
     };
 
     static defaultProps = {
-        songs: [],
+        results: {},
     }
 
     constructor(props) {
@@ -54,40 +55,72 @@ class Search extends Component {
         this.handleChange = :: this.handleChange;
     }
 
+    componentWillReceiveProps(props) {
+        //Search again if not matching the current search value
+        if (props.results.soundcloud.query !== this.state.searchValue) {
+            this.props.searchSoundcloud(this.state.searchValue);
+        }
+    }
+
     handleChange(e) {
         this.setState({
             ...this.state,
             searchValue: e.target.value,
         });
-        this.props.search(e.target.value)
-        // let key = 0;
-        // const songs = this.props.songs.map((song) => {
-        //     key += 1;
-        //     return (
-        //         <SearchItem
-        //           key={key}
-        //           song={song}
-        //         />
-        //     );
-        // });
+        this.props.searchAll(e.target.value);
     }
 
     render() {
+        let key = 0;
+        const soundCloudSongs = this.props.results.soundcloud.songs.map((song) => {
+            key += 1;
+            return (
+                <SearchItem
+                  key={key}
+                  song={song}
+                  source="soundcloud"
+                />
+            );
+        });
+
+        const styles = {
+            searchContainer: {
+                zIndex: 11,
+            },
+            searchContent: {
+                overflowY: 'scroll',
+                padding: '0',
+                maxHeight: 'calc(100vh - 304px)',
+                borderBottom: 'none',
+                overflowX: 'visible',
+                background: '#eee',
+                position: 'relative',
+                top: '0',
+                borderBottomLeftRadius: '4px',
+                borderBottomRightRadius: '4px',
+            },
+            shadow: {
+                WebkitBoxShadow: '12px 12px 64px -12px rgba(0,0,0,0.75)',
+                MozBoxShadow: '12px 12px 64px -12px rgba(0,0,0,0.75)',
+                boxShadow: '12px 12px 64px -12px rgba(0,0,0,0.75)',
+            },
+        };
         return (
             <SearchBox className="container">
                 <div className="content">
                     <input
-                        type="text"
-                        placeholder="suggest a song"
-                        value={this.state.searchValue}
-                        onChange={this.handleChange}
+                      type="text"
+                      placeholder="suggest a song"
+                      value={this.state.searchValue}
+                      onChange={this.handleChange}
                     />
                 </div>
-                <div id="search-container" class="container">
-                    <div className="content shadow">
+                <div className="container" style={styles.searchContainer}>
+                    <div className="content" style={{ ...styles.searchContent, ...styles.shadow }}>
                         <ul id="spotify-search-results" class="shown" >
                         </ul>
                         <ul id="soundcloud-search-results" >
+                            {soundCloudSongs}
                         </ul>
                     </div>
                 </div>
@@ -102,7 +135,7 @@ class Search extends Component {
  */
 function mapStateToProps(state) {
     return {
-
+        results: state.station.search,
     };
 }
 /**
@@ -111,7 +144,8 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        search,
+        searchAll,
+        searchSoundcloud,
     }, dispatch);
 }
 

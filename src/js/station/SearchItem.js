@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { addSong } from './stationActions';
 import styled from 'styled-components';
 import * as Colors from '../common/Colors';
 
@@ -59,12 +60,15 @@ const StyledQueueSong = styled.li`
 class SearchItem extends Component {
 
     static propTypes = {
+        source: PropTypes.string.isRequired,
         song: PropTypes.shape({
+            song_id: PropTypes.string,
             title: PropTypes.string,
             artist: PropTypes.string,
-            album_cover: PropTypes.string,
+            album_url: PropTypes.string,
+            duration: PropTypes.int,
         }).isRequired,
-        // addSong: PropTypes.func.isRequired,
+        addSong: PropTypes.func.isRequired,
     }
 
     constructor(props) {
@@ -77,11 +81,14 @@ class SearchItem extends Component {
     }
 
     handleClick() {
-
+        this.props.addSong({
+            ...this.props.song,
+            source: this.props.source,
+        });
     }
 
     render() {
-        const { title, artist, album_cover } = this.props.song;
+        const { title, artist, album_url } = this.props.song;
         const styles = {
             songInfo: {
                 paddingLeft: '6px',
@@ -101,7 +108,7 @@ class SearchItem extends Component {
         };
         return (
             <StyledQueueSong onClick={this.handleClick}>
-                <img alt="album" src={album_cover} />
+                <img alt="album" src={album_url} />
                 <div style={styles.songInfo}>
                     <p style={styles.songName}>{title}</p>
                     <p style={styles.artistName}>{artist}</p>
@@ -125,7 +132,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-
+        addSong,
     }, dispatch);
 }
 

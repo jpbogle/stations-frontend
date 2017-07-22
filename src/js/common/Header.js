@@ -5,26 +5,14 @@ import Logo from './Logo';
 import * as Colors from './Colors';
 
 
-const NavItem = styled.li`
-    display: inline-block;
-    color: white;
-    padding: 18px;
-    font-size: 18px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: .2s;
-    &:hover {
-        color: ${Colors.highlightC};
-    }
-`;
-
-const SmallHeader = styled.a`
+const LogoContainer = styled.a`
     color: white;
     position: relative;
-    top: ${props => props.shown ? '-5px' : '-15px'};
+    top: ${props => props.shown ? '0px' : '-15px'};
     opacity: ${props => props.shown ? '1' : '0'};
     visibility: ${props => props.shown ? 'visible' : 'collapse'};
     transition: .4s;
+    float: left;
     svg {
         width: 40px;
         margin-top: 6px;
@@ -32,81 +20,89 @@ const SmallHeader = styled.a`
     }
 `;
 
-const NavBar = styled.div`
-    z-index: 10;
-    height: 67px;
-    top: 0;
-    background-color: ${Colors.primaryC};
-    a {
-        letter-spacing: 3px;
+const NavItem = styled.a`
+    color: white;
+    float: left;
+    display: ${props => props.shown ? 'inline-block' : 'none'};
+    color: white;
+    padding: 18px;
+    font-size: 18px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: .2s;
+    letter-spacing: 3px;
+
+    &:hover {
+        color: ${Colors.highlightC};
     }
 `;
-
 
 export default class Header extends Component {
 
     static propTypes = {
-        index: PropTypes.bool,
+        station: PropTypes.string,
+        dashboard: PropTypes.bool,
+        admin: PropTypes.bool,
+        logoAnimate: PropTypes.bool,
     };
 
     static defaultProps = {
-        index: false,
+        station: '',
+        dashboard: false,
+        admin: false,
+        logoAnimate: false,
     }
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            shown: false,
-        };
-        this.toggleShown = :: this.toggleShown;
+    handleEdit() {
+
     }
 
-    toggleShown() {
-        this.setState({
-            shown: !this.state.shown,
-        });
+    handleMix() {
+
     }
 
     render() {
         const styles = {
             navBar: {
-                position: 'fixed',
                 zIndex: '10',
                 height: '67px',
+                top: '0',
+                backgroundColor: Colors.primaryC,
             },
             navBarLeft: {
                 float: 'left',
+                verticalAlign: 'bottom',
             },
             navBarRight: {
                 float: 'right',
             },
+            leftItems: {
+                float: 'left',
+                marginLeft: '10px',
+            },
         };
-        let navBarLinks;
-        if (this.props.index) {
-            navBarLinks = (
-                <ul>
-                    <a id="sign-in-button" onClick={() => this.toggleShown()}><NavItem>SIGN IN</NavItem></a>
-                    <a id="sign-up-button" onClick={() => this.toggleShown()}><NavItem>SIGN UP</NavItem></a>
-                </ul>
-            );
-        }
 
-
+        const { admin, station, dashboard, logoAnimate } = this.props;
         return (
-            <NavBar className="container">
+            <div className="container" style={styles.navBar}>
                 <div className="content">
                     <div style={styles.navBarLeft}>
-                        <SmallHeader id="small-header" href="/" shown={this.state.shown}>
-                            <Logo />
-                        </SmallHeader>
-                        <ul id="navbar-links">
+                        <LogoContainer shown href={dashboard ? '/' : '/dashboard'}>
+                            <Logo animate={logoAnimate} />
+                        </LogoContainer>
+                        <ul style={styles.leftItems}>
+                            <NavItem shown={station}>{station}</NavItem>
                         </ul>
                     </div>
                     <div style={styles.navBarRight}>
-                        { navBarLinks }
+                        <ul>
+                            <NavItem shown={admin} onClick={this.handleEdit}>Edit</NavItem>
+                            <NavItem shown={admin} onClick={this.handleMix}>Mix</NavItem>
+                            <NavItem shown={dashboard} onClick={this.handleSignOut}>Sign Out</NavItem>
+                        </ul>
                     </div>
                 </div>
-            </NavBar>
+            </div>
         );
     }
 }

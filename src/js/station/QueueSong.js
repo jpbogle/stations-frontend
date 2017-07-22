@@ -149,7 +149,7 @@ class QueueSong extends Component {
     }
 
     render() {
-        const { title, artist, album_cover, votes } = this.props.song;
+        const { title, artist, album_url, votes } = this.props.song;
         const styles = {
             songInfo: {
                 paddingLeft: '6px',
@@ -169,7 +169,7 @@ class QueueSong extends Component {
         };
         return (
             <StyledQueueSong>
-                <img alt="album" src={album_cover} />
+                <img alt="album" src={album_url} />
                 <div style={styles.songInfo}>
                     <p style={styles.songName}>{title}</p>
                     <p style={styles.artistName}>{artist}</p>

@@ -1,12 +1,19 @@
 import { browserHistory } from 'react-router';
+import SC from 'soundcloud';
 
 export const LOADING_SEARCH = 'LOADING_SEARCH';
 export const LOADING_STATION = 'LOADING_STATION';
 export const SET_STATION = 'SET_STATION';
+export const SET_SOUNDCLOUD_SONGS = 'SET_SOUNDCLOUD_SONGS';
 export const STATION_ERROR = 'STATION_ERROR';
 export const SPOTIFY_ERROR = 'SPOTIFY_ERROR';
 export const SOUNDCLOUD_ERROR = 'SOUNDCLOUD_ERROR';
 export const APPLEMUSIC_ERROR = 'APPLEMUSIC_ERROR';
+
+const dev = true;
+SC.initialize({
+    client_id: dev ? 'oG45iJyWRj8McdpinDKk4QSgRm8C1VzL' : 'GwGiygexslzpWR05lHIGqMBPPN0blbni',
+});
 
 function loadingStation() {
     return {
@@ -25,6 +32,16 @@ function setStation(station) {
         type: SET_STATION,
         payload: {
             station,
+        },
+    };
+}
+
+function setSoundCloudSongs(songs, query) {
+    return {
+        type: SET_SOUNDCLOUD_SONGS,
+        payload: {
+            songs,
+            query,
         },
     };
 }
@@ -65,7 +82,8 @@ function appleMusicError(error) {
     };
 }
 
-export function addSong(stationRoute, songRequest) {
+export function addSong(songRequest) {
+    const stationRoute = browserHistory.getCurrentLocation().pathname;
     return (dispatch) => {
         dispatch(loadingStation());
         return fetch(`http://localhost:8080/api${stationRoute}/songs/add`, {
@@ -76,6 +94,7 @@ export function addSong(stationRoute, songRequest) {
         .then((res) => {
             return res.json().then((json) => {
                 if (res.ok) {
+                    console.log(json);
                     dispatch(setStation(json.station));
                 } else {
                     const error = {
@@ -121,7 +140,7 @@ export function getStation(stationRoute) {
     };
 }
 
-function searchSpotify(query) {
+export function searchSpotify(query) {
     return (dispatch) => {
         return fetch('', {
             method: 'POST',
@@ -148,26 +167,34 @@ function searchSpotify(query) {
     };
 }
 
-function searchSoundcloud(query) {
+export function searchSoundcloud(query) {
     return (dispatch) => {
-        return fetch('', {
-            method: 'POST',
-            body: JSON.stringify(query),
-            mode: 'cors',
+        if (query === '') {
+            return dispatch(setSoundCloudSongs([], ''));
+        }
+        return SC.get('/tracks', {
+            q: query,
         })
         .then((res) => {
-            return res.json().then((json) => {
-                if (res.ok) {
-                    dispatch(setSoundCloudSongs(json));
-                } else {
-                    const error = {
-                        status: res.status,
-                        type: json.error_type,
-                        message: json.error_message,
+            if (res) {
+                const songs = res.map((song) => {
+                    return {
+                        song_id: `${song.id}`,
+                        title: song.title,
+                        artist: song.user.username,
+                        album_url: song.artwork_url,
+                        duration: song.duration,
                     };
-                    dispatch(soundcloudError(error));
-                }
-            });
+                });
+                dispatch(setSoundCloudSongs(songs, query));
+            } else {
+                const error = {
+                    status: res.status,
+                    type: json.error_type,
+                    message: json.error_message,
+                };
+                dispatch(soundcloudError(error));
+            }
         })
         .catch((err) => {
             setTimeout(() => dispatch(soundcloudError({ status: 500, type: 'Internal server error', message: err })), 1000);
@@ -175,7 +202,7 @@ function searchSoundcloud(query) {
     };
 }
 
-function searchAppleMusic(query) {
+export function searchAppleMusic(query) {
     return (dispatch) => {
         return fetch('', {
             method: 'POST',
@@ -202,12 +229,12 @@ function searchAppleMusic(query) {
     };
 }
 
-export function search(stationRoute, query) {
+export function searchAll(query) {
     return (dispatch) => {
         //TODO if we want search to wait for all to load
         // dispatch(loadingSearch());
         dispatch(searchSoundcloud(query));
-        dispatch(searchSpotify(query));
-        dispatch(searchAppleMusic(query));
+        // dispatch(searchSpotify(query));
+        // dispatch(searchAppleMusic(query));
     };
 }

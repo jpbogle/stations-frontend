@@ -1,6 +1,15 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 export default class Logo extends Component {
+
+    static propTypes = {
+        animate: PropTypes.bool,
+    };
+
+    static defaultProps = {
+        animate: false,
+    }
 
     render() {
         const styles = {
@@ -12,6 +21,8 @@ export default class Logo extends Component {
             },
         };
 
+        const opacity = this.props.animate ? '0' : '1';
+
         return (
             <svg version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 85.2 85.1">
                 <circle style={styles.purple} cx="42.5" cy="42.5" r="42.5" />
@@ -20,7 +31,7 @@ export default class Logo extends Component {
                       attributeType="CSS"
                       attributeName="opacity"
                       from="1"
-                      to="0"
+                      to={opacity}
                       dur="1.2s"
                       repeatCount="indefinite"
                       begin="0.0s"
@@ -31,7 +42,7 @@ export default class Logo extends Component {
                       attributeType="CSS"
                       attributeName="opacity"
                       from="1"
-                      to="0"
+                      to={opacity}
                       dur="1.2s"
                       repeatCount="indefinite"
                       begin="0.1s"
@@ -42,7 +53,7 @@ export default class Logo extends Component {
                       attributeType="CSS"
                       attributeName="opacity"
                       from="1"
-                      to="0"
+                      to={opacity}
                       dur="1.2s"
                       repeatCount="indefinite"
                       begin="0.2s"
@@ -53,7 +64,7 @@ export default class Logo extends Component {
                       attributeType="CSS"
                       attributeName="opacity"
                       from="1"
-                      to="0"
+                      to={opacity}
                       dur="1.2s"
                       repeatCount="indefinite"
                       begin="0.3s"
@@ -64,7 +75,7 @@ export default class Logo extends Component {
                       attributeType="CSS"
                       attributeName="opacity"
                       from="1"
-                      to="0"
+                      to={opacity}
                       dur="1.2s"
                       repeatCount="indefinite"
                       begin="0.4s"
@@ -75,7 +86,7 @@ export default class Logo extends Component {
                       attributeType="CSS"
                       attributeName="opacity"
                       from="1"
-                      to="0"
+                      to={opacity}
                       dur="1.2s"
                       repeatCount="indefinite"
                       begin="0.5s"
@@ -86,7 +97,7 @@ export default class Logo extends Component {
                       attributeType="CSS"
                       attributeName="opacity"
                       from="1"
-                      to="0"
+                      to={opacity}
                       dur="1.2s"
                       repeatCount="indefinite"
                       begin="0.6s"
@@ -97,7 +108,7 @@ export default class Logo extends Component {
                       attributeType="CSS"
                       attributeName="opacity"
                       from="1"
-                      to="0"
+                      to={opacity}
                       dur="1.2s"
                       repeatCount="indefinite"
                       begin="0.7s"

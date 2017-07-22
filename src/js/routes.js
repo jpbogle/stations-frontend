@@ -5,15 +5,14 @@ import Login from './login/Login';
 import Dashboard from './dashboard/Dashboard';
 import Station from './station/Station';
 import NotFound from './common/NotFound';
-import Main from './main/Main';
 
 export default (
-    <Route path="/" component={Main}>
+    <Route path="/">
         <IndexRoute component={Login} />
         <Route component={AuthenticateUser}>
             <Route path="dashboard" component={Dashboard} />
-            <Route path=":username/:stationName" component={Station} />
         </Route>
+        <Route path=":username/:stationName" component={Station} />
         <Route path="*" component={NotFound} />
     </Route>
 );

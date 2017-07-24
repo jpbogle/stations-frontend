@@ -86,7 +86,7 @@ export function addSong(songRequest) {
     const stationRoute = browserHistory.getCurrentLocation().pathname;
     return (dispatch) => {
         dispatch(loadingStation());
-        return fetch(`http://localhost:8080/api${stationRoute}/songs/add`, {
+        return fetch(`http://54.89.153.22:8080/api${stationRoute}/songs/add`, {
             method: 'POST',
             body: JSON.stringify(songRequest),
             mode: 'cors',
@@ -116,7 +116,7 @@ export function addSong(songRequest) {
 export function getStation(stationRoute) {
     return (dispatch) => {
         dispatch(loadingStation());
-        return fetch(`http://localhost:8080/api${stationRoute}`, {
+        return fetch(`http://54.89.153.22:8080/api${stationRoute}`, {
             method: 'GET',
             mode: 'cors',
         })

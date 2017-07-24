@@ -24,7 +24,7 @@ function stationError(error) {
 
 export function createStation(username, stationName) {
     return (dispatch) => {
-        return fetch('http://localhost:8080/api/stations/create', {
+        return fetch('http://54.89.153.22:8080/api/stations/create', {
             method: 'POST',
             body: JSON.stringify({
                 username: username,

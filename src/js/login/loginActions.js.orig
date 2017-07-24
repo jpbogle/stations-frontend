@@ -65,7 +65,11 @@ function loginError(error) {
 export function signUp(user) {
     return (dispatch) => {
         dispatch(loading());
+<<<<<<< HEAD
         return fetch('http://54.89.153.22:8080/api/users/create', {
+=======
+        return fetch('http://127.0.0.1:8080/api/users/create', {
+>>>>>>> 7b7745d07730dd515f6402110c71511422701f7f
             method: 'POST',
             body: JSON.stringify(user),
             mode: 'cors',
@@ -98,7 +102,11 @@ export function signUp(user) {
 export function login(user) {
     return (dispatch) => {
         dispatch(loading());
+<<<<<<< HEAD
+        return fetch('http://54.89.153.22:8080/api/users/login', {
+=======
         return fetch('http://127.0.0.1:8080/api/users/login', {
+>>>>>>> 7b7745d07730dd515f6402110c71511422701f7f
             method: 'POST',
             body: JSON.stringify(user),
             mode: 'cors',

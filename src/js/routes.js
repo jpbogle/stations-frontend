@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
-import AuthenticateUser from './common/AuthenticateUser';
+import AuthenticateUser from './login/AuthenticateUser';
 import Login from './login/Login';
 import Dashboard from './dashboard/Dashboard';
 import Station from './station/Station';

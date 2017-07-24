@@ -139,7 +139,20 @@ export class SignUp extends Component {
                 <div style={{ textAlign: 'center' }} className="content">
                     <h1 style={styles.label}>join stations {content}</h1>
                     <span style={styles.details}>{signupDetails}</span>
-                    <form style={styles.form}>
+                    <form
+                      style={styles.form}
+                      onSubmit={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          this.handleSignUp();
+                      }}
+                      onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                              e.preventDefault();
+                              this.handleSignUp();
+                          }
+                      }}
+                    >
                         <li>
                             <Input
                               type="text"

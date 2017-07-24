@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { browserHistory } from 'react-router';
 import PropTypes from 'prop-types';
+import { getSession } from './loginActions';
 
 class AuthenticateUser extends Component {
 
@@ -10,20 +11,20 @@ class AuthenticateUser extends Component {
         children: PropTypes.node,
         user: PropTypes.object,
         currentURL: PropTypes.string.isRequired,
+        getSession: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
         const { user } = this.props;
-        // if (user === null) {
-        //     // set redirect URL in state if we want to redirect
-        //     // to the place the user was going before requiring auth
-        //     // setRedirectUrl(currentURL);
-        //     browserHistory.replace('/');
-        // }
+        if (user === null) {
+            // set redirect URL in state if we want to redirect
+            // to the place the user was going before requiring auth
+            // setRedirectUrl(currentURL);
+            this.props.getSession();
+        }
     }
 
     render() {
-        return this.props.children;
         if (this.props.user != null) {
             return this.props.children;
         }
@@ -48,7 +49,7 @@ function mapStateToProps(state, ownProps) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-
+        getSession,
     }, dispatch);
 }
 

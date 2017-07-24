@@ -65,7 +65,7 @@ function loginError(error) {
 export function signUp(user) {
     return (dispatch) => {
         dispatch(loading());
-        return fetch('http://localhost:8080/api/users/create', {
+        return fetch('http://127.0.0.1:8080/api/users/create', {
             method: 'POST',
             body: JSON.stringify(user),
             mode: 'cors',
@@ -74,7 +74,7 @@ export function signUp(user) {
             return res.json().then((json) => {
                 if (res.ok) {
                     setTimeout(() => {
-                        dispatch(setUser(json.User));
+                        dispatch(setUser(json.user));
                         browserHistory.push('/dashboard');
                     }, 1000);
                 } else {
@@ -98,13 +98,16 @@ export function signUp(user) {
 export function login(user) {
     return (dispatch) => {
         dispatch(loading());
-        return fetch('http://localhost:8080/api/users/login', {
+        return fetch('http://127.0.0.1:8080/api/users/login', {
             method: 'POST',
             body: JSON.stringify(user),
             mode: 'cors',
+            credentials: 'include',
         })
         .then((res) => {
             return res.json().then((json) => {
+                console.log(res);
+                console.log(res.headers.get('set-cookie'));
                 if (res.ok) {
                     setTimeout(() => {
                         dispatch(setUser(json.user));
@@ -123,6 +126,37 @@ export function login(user) {
             });
         })
         .catch((err) => {
+            setTimeout(() => dispatch(loginError({ status: 500, type: 'Internal server error', message: err })), 1000);
+        });
+    };
+}
+
+export function getSession() {
+    return (dispatch) => {
+        dispatch(loading());
+        return fetch('http://127.0.0.1:8080/api/users/session', {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'include',
+        })
+        .then((res) => {
+            return res.json().then((json) => {
+                if (res.ok && json.user) {
+                    dispatch(setUser(json.user));
+                    browserHistory.push('/dashboard');
+                } else {
+                    const error = {
+                        status: res.status,
+                        type: json.error_type,
+                        message: json.error_message,
+                    };
+                    browserHistory.replace('/');
+                    dispatch(loginError(error));
+                }
+            });
+        })
+        .catch((err) => {
+            browserHistory.replace('/');
             setTimeout(() => dispatch(loginError({ status: 500, type: 'Internal server error', message: err })), 1000);
         });
     };

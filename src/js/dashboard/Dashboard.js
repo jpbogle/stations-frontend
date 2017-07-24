@@ -78,6 +78,7 @@ class Dashboard extends Component {
         let key = 0;
         return stations.map((station) => {
             key += 1;
+            console.log(station.songs[0])
             return (
                 <div
                   role="presentation"
@@ -86,7 +87,7 @@ class Dashboard extends Component {
                 >
                     <StationSmall
                       name={station.name}
-                      albumCover={station.songs.length > 0 ? station.songs[0].album_cover : ''}
+                      albumCover={station.songs.length > 0 ? station.songs[0].album_url : ''}
                       numSongs={station.songs ? station.songs.length : 0}
                       numAdmins={stations.admins ? station.admins.length : 0}
                     />
@@ -100,9 +101,9 @@ class Dashboard extends Component {
 
         const stations = user.stations == null ? '' : this.mapStations(user.stations);
 
-        const headshot = user.imageurl.length === 0 ?
+        const headshot = user.image_url.length === 0 ?
             <HeadshotFiller className="fa fa-user fa-5x" /> :
-            <Headshot alt="profile" src={user.imageurl} />;
+            <Headshot alt="profile" src={user.image_url} />;
 
         const styles = {
 

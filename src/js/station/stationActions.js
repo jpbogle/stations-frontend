@@ -1,5 +1,5 @@
-import { browserHistory } from 'react-router';
 import SC from 'soundcloud';
+import { browserHistory } from 'react-router';
 
 export const LOADING_SEARCH = 'LOADING_SEARCH';
 export const LOADING_STATION = 'LOADING_STATION';
@@ -142,13 +142,17 @@ export function getStation(stationRoute) {
 
 export function searchSpotify(query) {
     return (dispatch) => {
-        return fetch('', {
+        return fetch('https://api.spotify.com/v1/search', {
             method: 'POST',
-            body: JSON.stringify(query),
-            mode: 'cors',
+            body: JSON.stringify({
+                q: query,
+                type: 'track,artist',
+            }),
+            // mode: 'cors',
         })
         .then((res) => {
             return res.json().then((json) => {
+                console.log(res);
                 if (res.ok) {
                     dispatch(setSpotifySongs(json));
                 } else {
@@ -234,7 +238,7 @@ export function searchAll(query) {
         //TODO if we want search to wait for all to load
         // dispatch(loadingSearch());
         dispatch(searchSoundcloud(query));
-        // dispatch(searchSpotify(query));
+        dispatch(searchSpotify(query));
         // dispatch(searchAppleMusic(query));
     };
 }

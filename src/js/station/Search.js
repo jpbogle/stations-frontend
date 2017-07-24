@@ -62,12 +62,12 @@ class Search extends Component {
         }
     }
 
-    handleChange(e) {
+    handleChange(query) {
         this.setState({
             ...this.state,
-            searchValue: e.target.value,
+            searchValue: query,
         });
-        this.props.searchAll(e.target.value);
+        this.props.searchAll(query);
     }
 
     render() {
@@ -79,6 +79,7 @@ class Search extends Component {
                   key={key}
                   song={song}
                   source="soundcloud"
+                  postAdd={() => this.handleChange('')}
                 />
             );
         });
@@ -112,7 +113,7 @@ class Search extends Component {
                       type="text"
                       placeholder="suggest a song"
                       value={this.state.searchValue}
-                      onChange={this.handleChange}
+                      onChange={e => this.handleChange(e.target.value)}
                     />
                 </div>
                 <div className="container" style={styles.searchContainer}>

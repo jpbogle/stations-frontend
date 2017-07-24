@@ -69,6 +69,7 @@ class SearchItem extends Component {
             duration: PropTypes.int,
         }).isRequired,
         addSong: PropTypes.func.isRequired,
+        postAdd: PropTypes.func.isRequired,
     }
 
     constructor(props) {
@@ -85,6 +86,7 @@ class SearchItem extends Component {
             ...this.props.song,
             source: this.props.source,
         });
+        this.props.postAdd();
     }
 
     render() {

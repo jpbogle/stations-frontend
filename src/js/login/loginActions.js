@@ -135,7 +135,7 @@ export function login(user) {
 export function getSession() {
     return (dispatch) => {
         dispatch(loading());
-        return fetch(`${BaseURI}/users/session`, {
+        return fetch(`${BaseURI}/api/users/session`, {
             method: 'GET',
             mode: 'cors',
             credentials: 'include',

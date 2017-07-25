@@ -16,6 +16,25 @@ SC.initialize({
     client_id: dev ? 'oG45iJyWRj8McdpinDKk4QSgRm8C1VzL' : 'GwGiygexslzpWR05lHIGqMBPPN0blbni',
 });
 
+import jwt from 'jsonwebtoken';
+
+var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
+//backdate a jwt 30 seconds
+var older_token = jwt.sign({ foo: 'bar', iat: Math.floor(Date.now() / 1000) - 30 }, 'shhhhh');
+
+// sign asynchronously
+jwt.sign({ foo: 'bar' }, 'test', { algorithm: 'HS256' }, function(err, token) {
+  console.log(token);
+});
+
+jwt.sign({ iss: '2EXVDJ88N2' }, 'K85QWRBW9T', { algorithm: 'ES256', keyid: 'K85QWRBW9T', expiresIn: '10000' }, function(err, token) {
+  console.log(token);
+});
+
+jwt.sign({
+  exp: Math.floor(Date.now() / 1000) + (60 * 60),
+  data: 'foobar'
+}, 'secret');
 function loadingStation() {
     return {
         type: LOADING_STATION,

@@ -1,5 +1,6 @@
 import SC from 'soundcloud';
 import { browserHistory } from 'react-router';
+import BaseURI from '../common/BaseURI';
 
 export const LOADING_SEARCH = 'LOADING_SEARCH';
 export const LOADING_STATION = 'LOADING_STATION';
@@ -86,7 +87,7 @@ export function addSong(songRequest) {
     const stationRoute = browserHistory.getCurrentLocation().pathname;
     return (dispatch) => {
         dispatch(loadingStation());
-        return fetch(`http://54.89.153.22:8080/api${stationRoute}/songs/add`, {
+        return fetch(`${BaseURI}/api${stationRoute}/songs/add`, {
             method: 'POST',
             body: JSON.stringify(songRequest),
             mode: 'cors',
@@ -116,7 +117,7 @@ export function addSong(songRequest) {
 export function getStation(stationRoute) {
     return (dispatch) => {
         dispatch(loadingStation());
-        return fetch(`http://54.89.153.22:8080/api${stationRoute}`, {
+        return fetch(`${BaseURI}/api${stationRoute}`, {
             method: 'GET',
             mode: 'cors',
         })

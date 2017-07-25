@@ -1,4 +1,5 @@
 import { browserHistory } from 'react-router';
+import BaseURI from '../common/BaseURI';
 
 export const STATION_ERROR = 'STATION_ERROR';
 export const SET_STATION = 'SET_STATION';
@@ -24,7 +25,7 @@ function stationError(error) {
 
 export function createStation(username, stationName) {
     return (dispatch) => {
-        return fetch('http://54.89.153.22:8080/api/stations/create', {
+        return fetch(`${BaseURI}/api/stations/create`, {
             method: 'POST',
             body: JSON.stringify({
                 username: username,

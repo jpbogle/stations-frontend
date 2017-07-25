@@ -1,4 +1,5 @@
 import { browserHistory } from 'react-router';
+import BaseURI from '../common/BaseURI';
 
 export const LOADING = 'LOADING';
 export const SIGN_IN = 'SIGN_IN';
@@ -65,7 +66,7 @@ function loginError(error) {
 export function signUp(user) {
     return (dispatch) => {
         dispatch(loading());
-        return fetch('http://54.89.153.22:8080/api/users/create', {
+        return fetch(`${BaseURI}/api/users/create`, {
             method: 'POST',
             body: JSON.stringify(user),
             mode: 'cors',
@@ -98,7 +99,7 @@ export function signUp(user) {
 export function login(user) {
     return (dispatch) => {
         dispatch(loading());
-        return fetch('http://54.89.153.22:8080/api/users/login', {
+        return fetch(`${BaseURI}/api/users/login`, {
             method: 'POST',
             body: JSON.stringify(user),
             mode: 'cors',
@@ -134,7 +135,7 @@ export function login(user) {
 export function getSession() {
     return (dispatch) => {
         dispatch(loading());
-        return fetch('http://54.89.153.22:8080/api/users/session', {
+        return fetch(`${BaseURI}/users/session`, {
             method: 'GET',
             mode: 'cors',
             credentials: 'include',

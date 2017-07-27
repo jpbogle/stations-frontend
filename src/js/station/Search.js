@@ -49,36 +49,42 @@ class Search extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            searchValue: '',
-        };
         this.handleChange = :: this.handleChange;
     }
 
     componentWillReceiveProps(props) {
         //Search again if not matching the current search value
-        if (props.results.soundcloud.query !== this.state.searchValue) {
-            this.props.searchSoundcloud(this.state.searchValue);
-        }
+        // if (props.results.soundcloud.query !== this.state.searchValue) {
+        //     this.props.searchSoundcloud(this.state.searchValue);
+        // }
     }
 
     handleChange(query) {
-        this.setState({
-            ...this.state,
-            searchValue: query,
-        });
         this.props.searchAll(query);
     }
 
     render() {
-        let key = 0;
+        let soundCloudKey = 0;
         const soundCloudSongs = this.props.results.soundcloud.songs.map((song) => {
-            key += 1;
+            soundCloudKey += 1;
             return (
                 <SearchItem
-                  key={key}
+                  key={soundCloudKey}
                   song={song}
                   source="soundcloud"
+                  postAdd={() => this.handleChange('')}
+                />
+            );
+        });
+
+        let appleMusicKey = 0;
+        const appleMusicSongs = this.props.results.appleMusic.songs.map((song) => {
+            appleMusicKey += 1;
+            return (
+                <SearchItem
+                  key={appleMusicKey}
+                  song={song}
+                  source="appleMusic"
                   postAdd={() => this.handleChange('')}
                 />
             );
@@ -112,7 +118,7 @@ class Search extends Component {
                     <input
                       type="text"
                       placeholder="suggest a song"
-                      value={this.state.searchValue}
+                      value={this.props.searchValue}
                       onChange={e => this.handleChange(e.target.value)}
                     />
                 </div>
@@ -121,7 +127,7 @@ class Search extends Component {
                         <ul id="spotify-search-results" class="shown" >
                         </ul>
                         <ul id="soundcloud-search-results" >
-                            {soundCloudSongs}
+                            {appleMusicSongs}
                         </ul>
                     </div>
                 </div>
@@ -137,6 +143,7 @@ class Search extends Component {
 function mapStateToProps(state) {
     return {
         results: state.station.search,
+        searchValue: state.station.search.value,
     };
 }
 /**

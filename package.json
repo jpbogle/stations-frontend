@@ -5,8 +5,10 @@
   "main": "src/js/app.js",
   "dependencies": {
     "browser-sync": "^2.18.12",
+    "browserify-fs": "^1.0.0",
     "es6-promise": "4.1.0",
     "eslint-plugin-react": "^7.1.0",
+    "fs": "0.0.1-security",
     "gulp-eslint": "^4.0.0",
     "gulp-sass": "^3.1.0",
     "history": "^4.6.3",
@@ -14,6 +16,7 @@
     "jquery": "2.1.4",
     "jsonwebtoken": "^7.4.1",
     "lodash": "4.16.1",
+    "path": "^0.12.7",
     "prop-types": "15.5.7",
     "react": "15.5.4",
     "react-bootstrap": "0.31.0",
@@ -27,7 +30,8 @@
     "run-sequence": "^1.2.2",
     "soundcloud": "^3.1.2",
     "styled-components": "^2.1.0",
-    "uuid": "3.0.1"
+    "uuid": "3.0.1",
+    "with-query": "^1.0.2"
   },
   "license": "UNLICENSED",
   "devDependencies": {

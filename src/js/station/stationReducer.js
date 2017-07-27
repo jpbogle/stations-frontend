@@ -2,9 +2,11 @@ import {
     LOADING_STATION,
     LOADING_SEARCH,
     SET_STATION,
+    SET_SEARCH_VALUE,
     STATION_ERROR,
     SPOTIFY_ERROR,
     SET_SOUNDCLOUD_SONGS,
+    SET_APPLE_MUSIC_SONGS,
     SOUNDCLOUD_ERROR,
     APPLEMUSIC_ERROR,
 } from './stationActions';
@@ -20,6 +22,7 @@ const initialState = {
     loading: true,
     error: noError,
     search: {
+        value: '',
         spotify: {
             loading: false,
             error: noError,
@@ -76,6 +79,25 @@ export default function helloReducer(state = initialState, action) {
                 loading: true,
             },
         };
+
+    case SET_SEARCH_VALUE:
+        if (payload.query === '') {
+            return {
+                ...state,
+                search: {
+                    ...initialState.search,
+                    value: payload.query,
+                },
+            };
+        }
+        return {
+            ...state,
+            search: {
+                ...state.search,
+                value: payload.query,
+            },
+        };
+
     case SPOTIFY_ERROR:
         return {
             ...state,
@@ -90,11 +112,31 @@ export default function helloReducer(state = initialState, action) {
         };
 
     case SET_SOUNDCLOUD_SONGS:
+        if (state.search.value !== payload.query) {
+            return state;
+        }
         return {
             ...state,
             search: {
                 ...state.search,
                 soundcloud: {
+                    loading: false,
+                    error: noError,
+                    songs: payload.songs,
+                    query: payload.query,
+                },
+            },
+        };
+
+    case SET_APPLE_MUSIC_SONGS:
+        if (state.search.value !== payload.query) {
+            return state;
+        }
+        return {
+            ...state,
+            search: {
+                ...state.search,
+                appleMusic: {
                     loading: false,
                     error: noError,
                     songs: payload.songs,

@@ -5,7 +5,9 @@ import BaseURI from '../common/BaseURI';
 export const LOADING_SEARCH = 'LOADING_SEARCH';
 export const LOADING_STATION = 'LOADING_STATION';
 export const SET_STATION = 'SET_STATION';
+export const SET_SEARCH_VALUE = 'SET_SEARCH_VALUE';
 export const SET_SOUNDCLOUD_SONGS = 'SET_SOUNDCLOUD_SONGS';
+export const SET_APPLE_MUSIC_SONGS = 'SET_APPLE_MUSIC_SONGS';
 export const STATION_ERROR = 'STATION_ERROR';
 export const SPOTIFY_ERROR = 'SPOTIFY_ERROR';
 export const SOUNDCLOUD_ERROR = 'SOUNDCLOUD_ERROR';
@@ -18,23 +20,11 @@ SC.initialize({
 
 import jwt from 'jsonwebtoken';
 
-var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
-//backdate a jwt 30 seconds
-var older_token = jwt.sign({ foo: 'bar', iat: Math.floor(Date.now() / 1000) - 30 }, 'shhhhh');
-
-// sign asynchronously
-jwt.sign({ foo: 'bar' }, 'test', { algorithm: 'HS256' }, function(err, token) {
-  console.log(token);
+let appleMusicToken;
+jwt.sign({ iss: '2EXVDJ88N2' }, '-----BEGIN PRIVATE KEY-----\nMIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIid3+wnYhhPXSvrjH7BO1o7KgacJpVIYIrufxmiKSgCgCgYIKoZIzj0DAQehRANCAARCdYFP5H8z7/Z9JOBk+aNzxxuxnqmNz/l2wGpaUo8Zu//W3DYR+x6nALb23XpSDHl/2mAqMuKzUOqaxOO3Axeu\n-----END PRIVATE KEY-----', { algorithm: 'ES256', keyid: 'SMJSB9AGUQ', expiresIn: '1000000' }, function(err, token) {
+    appleMusicToken = token;
 });
 
-jwt.sign({ iss: '2EXVDJ88N2' }, 'K85QWRBW9T', { algorithm: 'ES256', keyid: 'K85QWRBW9T', expiresIn: '10000' }, function(err, token) {
-  console.log(token);
-});
-
-jwt.sign({
-  exp: Math.floor(Date.now() / 1000) + (60 * 60),
-  data: 'foobar'
-}, 'secret');
 function loadingStation() {
     return {
         type: LOADING_STATION,
@@ -56,9 +46,28 @@ function setStation(station) {
     };
 }
 
+function setSearchValue(query) {
+    return {
+        type: SET_SEARCH_VALUE,
+        payload: {
+            query,
+        },
+    };
+}
+
 function setSoundCloudSongs(songs, query) {
     return {
         type: SET_SOUNDCLOUD_SONGS,
+        payload: {
+            songs,
+            query,
+        },
+    };
+}
+
+function setAppleMusicSongs(songs, query) {
+    return {
+        type: SET_APPLE_MUSIC_SONGS,
         payload: {
             songs,
             query,
@@ -135,6 +144,12 @@ export function addSong(songRequest) {
 
 export function getStation(stationRoute) {
     return (dispatch) => {
+        var exampleSocket = new WebSocket(`ws://localhost:8080/api${stationRoute}/ws`);
+        console.log(exampleSocket);
+        exampleSocket.onmessage = function (event) {
+            dispatch(setStation(JSON.parse(event.data).station));
+            console.log(JSON.parse(event.data));
+        };
         dispatch(loadingStation());
         return fetch(`${BaseURI}/api${stationRoute}`, {
             method: 'GET',
@@ -143,7 +158,8 @@ export function getStation(stationRoute) {
         .then((res) => {
             return res.json().then((json) => {
                 if (res.ok) {
-                    dispatch(setStation(json.station));
+                    console.log('woah', json);
+                    // dispatch(setStation(json.station));
                 } else {
                     const error = {
                         status: res.status,
@@ -227,24 +243,40 @@ export function searchSoundcloud(query) {
 }
 
 export function searchAppleMusic(query) {
+    const term = query.replace(/ /g, '+');
     return (dispatch) => {
-        return fetch('', {
-            method: 'POST',
-            body: JSON.stringify(query),
+        return fetch(`https://api.music.apple.com/v1/catalog/us/search?term=${term}?&types=artists,songs&limit=15`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${appleMusicToken}`,
+            },
             mode: 'cors',
         })
         .then((res) => {
             return res.json().then((json) => {
                 if (res.ok) {
-                    dispatch(setAppleMusicSongs(json));
-                } else {
-                    const error = {
-                        status: res.status,
-                        type: json.error_type,
-                        message: json.error_message,
-                    };
-                    dispatch(appleMusicError()(error));
+                    if (!json.results.songs) {
+                        return dispatch(setAppleMusicSongs([], ''));
+                    }
+                    const songs = json.results.songs.data.map((song) => {
+                        let albumUrl = song.attributes.artwork.url.replace(/{w}/g, Math.floor(song.attributes.artwork.width / 10));
+                        albumUrl = albumUrl.replace(/{h}/g, Math.floor(song.attributes.artwork.height / 10));
+                        return {
+                            song_id: `${song.id}`,
+                            title: song.attributes.name,
+                            artist: song.attributes.artistName,
+                            album_url: albumUrl,
+                            duration: song.attributes.durationInMillis,
+                        };
+                    });
+                    return dispatch(setAppleMusicSongs(songs, query));
                 }
+                const error = {
+                    status: res.status,
+                    type: json.error_type,
+                    message: json.error_message,
+                };
+                return dispatch(appleMusicError()(error));
             });
         })
         .catch((err) => {
@@ -255,10 +287,14 @@ export function searchAppleMusic(query) {
 
 export function searchAll(query) {
     return (dispatch) => {
-        //TODO if we want search to wait for all to load
+        dispatch(setSearchValue(query));
+        if (query === '') {
+            return;
+        }
+        // TODO if we want search to wait for all to load
         // dispatch(loadingSearch());
         dispatch(searchSoundcloud(query));
-        dispatch(searchSpotify(query));
-        // dispatch(searchAppleMusic(query));
+        // dispatch(searchSpotify(query));
+        dispatch(searchAppleMusic(query));
     };
 }

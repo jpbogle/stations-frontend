@@ -9,6 +9,7 @@ import {
     SET_APPLE_MUSIC_SONGS,
     SOUNDCLOUD_ERROR,
     APPLEMUSIC_ERROR,
+    SEND_NOTIFICATION,
 } from './stationActions';
 
 const noError = {
@@ -21,6 +22,7 @@ const initialState = {
     station: {},
     loading: true,
     error: noError,
+    notification: '',
     search: {
         value: '',
         spotify: {
@@ -169,6 +171,12 @@ export default function helloReducer(state = initialState, action) {
                     songs: [],
                 },
             },
+        };
+
+    case SEND_NOTIFICATION:
+        return {
+            ...state,
+            notification: payload.message,
         };
     default:
         return state;

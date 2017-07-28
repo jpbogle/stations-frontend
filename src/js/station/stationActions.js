@@ -12,6 +12,7 @@ export const STATION_ERROR = 'STATION_ERROR';
 export const SPOTIFY_ERROR = 'SPOTIFY_ERROR';
 export const SOUNDCLOUD_ERROR = 'SOUNDCLOUD_ERROR';
 export const APPLEMUSIC_ERROR = 'APPLEMUSIC_ERROR';
+export const SEND_NOTIFICATION = 'SEND_NOTIFICATION';
 
 const dev = true;
 SC.initialize({
@@ -111,6 +112,15 @@ function appleMusicError(error) {
     };
 }
 
+function notification(message) {
+    return {
+        type: SEND_NOTIFICATION,
+        payload: {
+            message,
+        },
+    };
+}
+
 export function addSong(songRequest) {
     const stationRoute = browserHistory.getCurrentLocation().pathname;
     return (dispatch) => {
@@ -142,14 +152,17 @@ export function addSong(songRequest) {
 }
 
 
+function openSocket(stationRoute, dispatch) {
+    const exampleSocket = new WebSocket(`ws://localhost:8080/api${stationRoute}/ws`);
+    exampleSocket.onmessage = function (event) {
+        dispatch(setStation(JSON.parse(event.data).station));
+        dispatch(notification(JSON.parse(event.data).message));
+    };
+}
+
 export function getStation(stationRoute) {
     return (dispatch) => {
-        var exampleSocket = new WebSocket(`ws://localhost:8080/api${stationRoute}/ws`);
-        console.log(exampleSocket);
-        exampleSocket.onmessage = function (event) {
-            dispatch(setStation(JSON.parse(event.data).station));
-            console.log(JSON.parse(event.data));
-        };
+        openSocket(stationRoute, dispatch);
         dispatch(loadingStation());
         return fetch(`${BaseURI}/api${stationRoute}`, {
             method: 'GET',
@@ -158,8 +171,7 @@ export function getStation(stationRoute) {
         .then((res) => {
             return res.json().then((json) => {
                 if (res.ok) {
-                    console.log('woah', json);
-                    // dispatch(setStation(json.station));
+                    dispatch(setStation(json.station));
                 } else {
                     const error = {
                         status: res.status,
@@ -298,3 +310,4 @@ export function searchAll(query) {
         dispatch(searchAppleMusic(query));
     };
 }
+

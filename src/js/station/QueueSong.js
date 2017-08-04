@@ -72,7 +72,6 @@ const VoteControl = styled.div`
         padding: 0;
         transform-origin: 0 100%;
         transition: .2s;
-        margin-left: -2px;
 
         i {
             position: relative;

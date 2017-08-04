@@ -1,2 +1,2 @@
 const isDevelop = true;
-export default isDevelop ? 'http://localhost:8080' : 'http://54.89.153.22:8080';
+export default isDevelop ? '192.168.1.18:8080' : '54.89.153.22:8080';

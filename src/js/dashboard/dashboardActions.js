@@ -25,7 +25,7 @@ function stationError(error) {
 
 export function createStation(username, stationName) {
     return (dispatch) => {
-        return fetch(`${BaseURI}/api/stations/create`, {
+        return fetch(`http://${BaseURI}/api/stations/create`, {
             method: 'POST',
             body: JSON.stringify({
                 username: username,

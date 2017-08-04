@@ -127,7 +127,7 @@ class Search extends Component {
                         <ul id="spotify-search-results" class="shown" >
                         </ul>
                         <ul id="soundcloud-search-results" >
-                            {appleMusicSongs}
+                            {soundCloudSongs}
                         </ul>
                     </div>
                 </div>

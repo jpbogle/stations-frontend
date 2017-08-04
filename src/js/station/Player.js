@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
+import { nextSong, playSong, pauseSong } from './stationActions';
 
 const StyledPlayer = styled.div`
     position: fixed;
@@ -62,20 +63,38 @@ const Help = styled.div`
 class Player extends Component {
 
     static propTypes = {
+        song: PropTypes.shape({
+            title: PropTypes.string,
+            artist: PropTypes.string,
+            source: PropTypes.string,
+            song_id: PropTypes.string,
+            album_url: PropTypes.string,
+            votes: PropTypes.number,
+            duration: PropTypes.int,
+        }),
+        playing: PropTypes.bool,
+        playSong: PropTypes.func.isRequired,
+        pauseSong: PropTypes.func.isRequired,
+        nextSong: PropTypes.func.isRequired,
+    };
 
+    static defaultProps = {
+        songs: {
+            title: '',
+            artist: '',
+        },
+        playing: false,
     }
 
     render() {
-        const title = 'testsong';
-        const artist = 'testartist';
-        const albumCover = '';
-        const playing = false;
+        const { title, artist, album_url, source } = this.props.song;
+        const playing = this.props.playing;
         const styles = {
             playButton: {
-                display: playing ? 'inline-block' : 'none',
+                display: playing ? 'inline-block' : 'inline-block',
             },
             stopButton: {
-                display: playing ? 'none' : 'inline-block',
+                display: playing ? 'inline-block' : 'inline-block',
             },
             infoContainer: {
                 float: 'left',
@@ -108,15 +127,15 @@ class Player extends Component {
         };
         const buttons = (
             <div>
-                <i style={styles.playButton} className="fa fa-play fa-2x" aria-hidden="true" />
-                <i style={styles.stopButton} className="fa fa-stop fa-2x" aria-hidden="true" />
-                <i style={styles.stopButton} className="fa fa-forward fa-2x" aria-hidden="true" />
+                <i style={styles.playButton} className="fa fa-play fa-2x" aria-hidden="true" onClick={() => this.props.playSong(source)} />
+                <i style={styles.stopButton} className="fa fa-stop fa-2x" aria-hidden="true" onClick={() => this.props.pauseSong(source)} />
+                <i style={styles.playButton} className="fa fa-forward fa-2x" aria-hidden="true" onClick={() => this.props.nextSong()} />
             </div>
         );
 
         return (
             <StyledPlayer>
-                <img alt="albumCover" src={albumCover} style={{ visibility: albumCover === '' ? 'collapse' : 'visible' }} />
+                <img alt="albumCover" src={album_url} style={{ visibility: album_url === '' ? 'collapse' : 'visible' }} />
                 <PlayerInfo>
                     <div id="progress-bar-container">
                         <div id="progress-bar" />
@@ -142,7 +161,6 @@ class Player extends Component {
  */
 function mapStateToProps(state) {
     return {
-
     };
 }
 /**
@@ -151,7 +169,9 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-
+        playSong,
+        pauseSong,
+        nextSong,
     }, dispatch);
 }
 

@@ -26,6 +26,8 @@ jwt.sign({ iss: '2EXVDJ88N2' }, '-----BEGIN PRIVATE KEY-----\nMIGTAgEAMBMGByqGSM
     appleMusicToken = token;
 });
 
+let soundCloudPlayer;
+
 function loadingStation() {
     return {
         type: LOADING_STATION,
@@ -120,12 +122,112 @@ function notification(message) {
         },
     };
 }
+            // if (sound) {
+            //     sound.destruct()
+            // }
+            // sound = soundManager.createSound({
+            //     id: 'mySound',
+            //     url: "https://api.soundcloud.com/tracks/" + station.currentSong.song.idNumber + "/stream" + "?client_id=" + $('#soundcloud-key').html(),
+            //     stream: true,
+            //     onfinish: function () {
+            //         nextSong();
+            //     }
+            // });
+            // sound.setPosition(station.currentSong.position);
+            // sound.play();
+export function pauseSong(source) {
+    switch (source) {
+    case 'soundcloud':
+        soundCloudPlayer.pause();
+        break;
+
+    case 'appleMusic':
+        console.log('pause Applu Music');
+        break;
+
+    case 'spotify':
+        console.log('pause spotify');
+        break;
+
+    default:
+        break;
+    }
+}
+
+export function playSong(source) {
+    switch (source) {
+    case 'soundcloud':
+        soundCloudPlayer.play();
+        break;
+
+    case 'appleMusic':
+        console.log('pause Applu Music');
+        break;
+
+    case 'spotify':
+        console.log('pause spotify');
+        break;
+
+    default:
+        break;
+    }
+}
+
+export function nextSong() {
+    const stationRoute = browserHistory.getCurrentLocation().pathname;
+    return (dispatch) => {
+        dispatch(loadingStation());
+        return fetch(`http://${BaseURI}/api${stationRoute}/play/next`, {
+            method: 'POST',
+            mode: 'cors',
+        })
+        .then((res) => {
+            return res.json().then((json) => {
+                if (res.ok) {
+                    console.log(json);
+                    switch (json.station.playing.song.source) {
+                    case 'soundcloud':
+                        SC.stream(`/tracks/${json.station.playing.song.song_id}`).then((player) => {
+                            soundCloudPlayer = player;
+                            soundCloudPlayer.play();
+                        });
+                        break;
+
+                    case 'appleMusic':
+                        console.log('play Applu Music');
+                        break;
+
+                    case 'spotify':
+                        console.log('play spotify');
+                        break;
+
+                    default:
+                        break;
+                    }
+
+                    // dispatch(setStation(json.station));
+                } else {
+                    const error = {
+                        status: res.status,
+                        type: json.error_type,
+                        message: json.error_message,
+                    };
+                    dispatch(stationError(error));
+                }
+            });
+        })
+        .catch((err) => {
+            setTimeout(() => dispatch(stationError({ status: 500, type: 'Internal server error', message: err })), 1000);
+        });
+    };
+}
+
 
 export function addSong(songRequest) {
     const stationRoute = browserHistory.getCurrentLocation().pathname;
     return (dispatch) => {
         dispatch(loadingStation());
-        return fetch(`${BaseURI}/api${stationRoute}/songs/add`, {
+        return fetch(`http://${BaseURI}/api${stationRoute}/songs/add`, {
             method: 'POST',
             body: JSON.stringify(songRequest),
             mode: 'cors',
@@ -153,9 +255,13 @@ export function addSong(songRequest) {
 
 
 function openSocket(stationRoute, dispatch) {
-    const exampleSocket = new WebSocket(`ws://localhost:8080/api${stationRoute}/ws`);
+    const exampleSocket = new WebSocket(`ws://${BaseURI}/api${stationRoute}/ws`);
     exampleSocket.onmessage = function (event) {
         dispatch(setStation(JSON.parse(event.data).station));
+        // SC.stream(`/tracks/${JSON.parse(event.data).station.playing.song.song_id}`).then((player) => {
+        //     soundCloudPlayer = player;
+        //     soundCloudPlayer.play();
+        // });
         dispatch(notification(JSON.parse(event.data).message));
     };
 }
@@ -164,7 +270,7 @@ export function getStation(stationRoute) {
     return (dispatch) => {
         openSocket(stationRoute, dispatch);
         dispatch(loadingStation());
-        return fetch(`${BaseURI}/api${stationRoute}`, {
+        return fetch(`http://${BaseURI}/api${stationRoute}`, {
             method: 'GET',
             mode: 'cors',
         })

@@ -66,7 +66,7 @@ function loginError(error) {
 export function signUp(user) {
     return (dispatch) => {
         dispatch(loading());
-        return fetch(`${BaseURI}/api/users/create`, {
+        return fetch(`http://${BaseURI}/api/users/create`, {
             method: 'POST',
             body: JSON.stringify(user),
             mode: 'cors',
@@ -99,7 +99,7 @@ export function signUp(user) {
 export function login(user) {
     return (dispatch) => {
         dispatch(loading());
-        return fetch(`${BaseURI}/api/users/login`, {
+        return fetch(`http://${BaseURI}/api/users/login`, {
             method: 'POST',
             body: JSON.stringify(user),
             mode: 'cors',
@@ -135,7 +135,7 @@ export function login(user) {
 export function getSession() {
     return (dispatch) => {
         dispatch(loading());
-        return fetch(`${BaseURI}/api/users/session`, {
+        return fetch(`http://${BaseURI}/api/users/session`, {
             method: 'GET',
             mode: 'cors',
             credentials: 'include',

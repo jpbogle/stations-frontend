@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
-import { nextSong, playSong, pauseSong } from './stationActions';
+import SC from 'soundcloud';
+import { nextSong, sendPlayer } from './stationActions';
+
 
 const StyledPlayer = styled.div`
     position: fixed;
@@ -73,28 +75,130 @@ class Player extends Component {
             duration: PropTypes.int,
         }),
         playing: PropTypes.bool,
-        playSong: PropTypes.func.isRequired,
-        pauseSong: PropTypes.func.isRequired,
+        position: PropTypes.number,
+        timestamp: PropTypes.number,
         nextSong: PropTypes.func.isRequired,
     };
 
     static defaultProps = {
-        songs: {
+        song: {
             title: '',
             artist: '',
         },
+        position: 0,
+        timestamp: Date.now(),
         playing: false,
     }
 
+    constructor(props) {
+        super(props);
+        const dev = true;
+        SC.initialize({
+            client_id: dev ? 'oG45iJyWRj8McdpinDKk4QSgRm8C1VzL' : 'GwGiygexslzpWR05lHIGqMBPPN0blbni',
+        });
+        this.state = {
+            soundCloudPlayer: null,
+        };
+        this.changeTime = :: this.changeTime;
+        this.playSong = :: this.playSong;
+        this.sendPause = :: this.sendPause;
+        this.sendPlay = :: this.sendPlay;
+    }
+
+    componentWillReceiveProps(props) {
+        if (props.playing && props.song.song_id !== this.props.song.song_id) {
+            this.setSong(props.song.source, props.song.song_id, props.position, props.timestamp);
+        } else if (props.playing) {
+            this.playSong();
+        } else {
+            this.pauseSong();
+        }
+    }
+
+    setSong(source, song_id, position, timestamp) {
+        switch (source) {
+        case 'soundcloud':
+            SC.stream(`/tracks/${song_id}`).then((player) => {
+                this.setState({
+                    soundCloudPlayer: player,
+                    position: position + (Date.now() - timestamp),
+                }, () => {
+                    this.playSong();
+                });
+            });
+            break;
+        default:
+            break;
+        }
+    }
+
+    playSong() {
+        clearInterval(this.timer);
+        this.timer = setInterval(() => this.changeTime(), 100);
+        switch (this.props.song.source) {
+        case 'soundcloud':
+            this.state.soundCloudPlayer.play();
+            this.state.soundCloudPlayer.setVolume(0);
+            this.state.soundCloudPlayer.on('seeked', () => this.state.soundCloudPlayer.setVolume(1));
+            setTimeout(() => this.state.soundCloudPlayer.seek(this.state.position), 1000);
+            break;
+        case 'spotify':
+            break;
+        case 'appleMusic':
+            break;
+        default:
+            break;
+        }
+    }
+
+    pauseSong() {
+        clearInterval(this.timer);
+        switch (this.props.song.source) {
+        case 'soundcloud':
+            this.state.soundCloudPlayer.pause();
+            break;
+        case 'spotify':
+            break;
+        case 'appleMusic':
+            break;
+        default:
+            break;
+        }
+    }
+
+    sendPause() {
+        sendPlayer({
+            song: this.props.song,
+            playing: false,
+            position: this.state.position,
+            timestamp: Date.now(),
+        });
+    }
+
+    sendPlay() {
+        sendPlayer({
+            song: this.props.song,
+            playing: true,
+            position: this.state.position,
+            timestamp: Date.now(),
+        });
+    }
+
+    changeTime() {
+        this.setState({
+            position: this.state.position + 100,
+        });
+    }
+
     render() {
-        const { title, artist, album_url, source } = this.props.song;
+        const { title, artist, album_url } = this.props.song;
         const playing = this.props.playing;
         const styles = {
             playButton: {
-                display: playing ? 'inline-block' : 'inline-block',
+                display: playing ? 'none' : 'inline-block',
             },
             stopButton: {
-                display: playing ? 'inline-block' : 'inline-block',
+                display: playing ? 'inline-block' : 'none',
             },
             infoContainer: {
                 float: 'left',
@@ -123,22 +227,33 @@ class Player extends Component {
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
             },
-
+            progressBarContainer: {
+                position: 'absolute',
+                width: '100%',
+                height: '2px',
+                marginBottom: '4px',
+                backgroundColor: '#222',
+            },
+            progressBar: {
+                float: 'left',
+                width: `${100 * (this.state.position / this.props.song.duration)}%`,
+                height: '6px',
+                backgroundColor: '#ccc',
+            },
         };
         const buttons = (
             <div>
-                <i style={styles.playButton} className="fa fa-play fa-2x" aria-hidden="true" onClick={() => this.props.playSong(source)} />
-                <i style={styles.stopButton} className="fa fa-stop fa-2x" aria-hidden="true" onClick={() => this.props.pauseSong(source)} />
-                <i style={styles.playButton} className="fa fa-forward fa-2x" aria-hidden="true" onClick={() => this.props.nextSong()} />
+                <i style={styles.playButton} className="fa fa-play fa-2x" aria-hidden="true" onClick={() => this.sendPlay()} />
+                <i style={styles.stopButton} className="fa fa-stop fa-2x" aria-hidden="true" onClick={() => this.sendPause()} />
+                <i className="fa fa-forward fa-2x" aria-hidden="true" onClick={() => this.props.nextSong()} />
             </div>
         );
-
         return (
             <StyledPlayer>
                 <img alt="albumCover" src={album_url} style={{ visibility: album_url === '' ? 'collapse' : 'visible' }} />
                 <PlayerInfo>
-                    <div id="progress-bar-container">
-                        <div id="progress-bar" />
+                    <div style={styles.progressBarContainer}>
+                        <div style={styles.progressBar} />
                     </div>
                     <div style={styles.infoContainer}>
                         <div style={styles.songInfo}>
@@ -161,6 +276,11 @@ class Player extends Component {
  */
 function mapStateToProps(state) {
     return {
+        song: state.station.player.song,
+        playing: state.station.player.playing,
+        position: state.station.player.position,
+        timestamp: state.station.player.timestamp,
+        ws: state.station.ws,
     };
 }
 /**
@@ -169,8 +289,6 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        playSong,
-        pauseSong,
         nextSong,
     }, dispatch);
 }

@@ -1,10 +1,12 @@
-import SC from 'soundcloud';
 import { browserHistory } from 'react-router';
+import jwt from 'jsonwebtoken';
 import BaseURI from '../common/BaseURI';
 
 export const LOADING_SEARCH = 'LOADING_SEARCH';
 export const LOADING_STATION = 'LOADING_STATION';
 export const SET_STATION = 'SET_STATION';
+export const SET_WEBSOCKET = 'SET_WEBSOCKET';
+export const UPDATE_PLAYER = 'UPDATE_PLAYER';
 export const SET_SEARCH_VALUE = 'SET_SEARCH_VALUE';
 export const SET_SOUNDCLOUD_SONGS = 'SET_SOUNDCLOUD_SONGS';
 export const SET_APPLE_MUSIC_SONGS = 'SET_APPLE_MUSIC_SONGS';
@@ -14,19 +16,18 @@ export const SOUNDCLOUD_ERROR = 'SOUNDCLOUD_ERROR';
 export const APPLEMUSIC_ERROR = 'APPLEMUSIC_ERROR';
 export const SEND_NOTIFICATION = 'SEND_NOTIFICATION';
 
-const dev = true;
-SC.initialize({
-    client_id: dev ? 'oG45iJyWRj8McdpinDKk4QSgRm8C1VzL' : 'GwGiygexslzpWR05lHIGqMBPPN0blbni',
-});
-
-import jwt from 'jsonwebtoken';
-
 let appleMusicToken;
-jwt.sign({ iss: '2EXVDJ88N2' }, '-----BEGIN PRIVATE KEY-----\nMIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIid3+wnYhhPXSvrjH7BO1o7KgacJpVIYIrufxmiKSgCgCgYIKoZIzj0DAQehRANCAARCdYFP5H8z7/Z9JOBk+aNzxxuxnqmNz/l2wGpaUo8Zu//W3DYR+x6nALb23XpSDHl/2mAqMuKzUOqaxOO3Axeu\n-----END PRIVATE KEY-----', { algorithm: 'ES256', keyid: 'SMJSB9AGUQ', expiresIn: '1000000' }, function(err, token) {
+// TODO get the private key from the backend...
+jwt.sign({ iss: '2EXVDJ88N2' }, '-----BEGIN PRIVATE KEY-----\nMIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIid3+wnYhhPXSvrjH7BO1o7KgacJpVIYIrufxmiKSgCgCgYIKoZIzj0DAQehRANCAARCdYFP5H8z7/Z9JOBk+aNzxxuxnqmNz/l2wGpaUo8Zu//W3DYR+x6nALb23XpSDHl/2mAqMuKzUOqaxOO3Axeu\n-----END PRIVATE KEY-----', { algorithm: 'ES256', keyid: 'SMJSB9AGUQ', expiresIn: '1000000' }, (err, token) => {
     appleMusicToken = token;
 });
 
-let soundCloudPlayer;
+let ws;
+//////////////////////////////////////////////////////////////////////////////
+//
+// Redux Actions
+//
+//////////////////////////////////////////////////////////////////////////////
 
 function loadingStation() {
     return {
@@ -45,6 +46,15 @@ function setStation(station) {
         type: SET_STATION,
         payload: {
             station,
+        },
+    };
+}
+
+function setWebsocket(ws) {
+    return {
+        type: SET_WEBSOCKET,
+        payload: {
+            ws,
         },
     };
 }
@@ -122,56 +132,51 @@ function notification(message) {
         },
     };
 }
-            // if (sound) {
-            //     sound.destruct()
-            // }
-            // sound = soundManager.createSound({
-            //     id: 'mySound',
-            //     url: "https://api.soundcloud.com/tracks/" + station.currentSong.song.idNumber + "/stream" + "?client_id=" + $('#soundcloud-key').html(),
-            //     stream: true,
-            //     onfinish: function () {
-            //         nextSong();
-            //     }
-            // });
-            // sound.setPosition(station.currentSong.position);
-            // sound.play();
-export function pauseSong(source) {
-    switch (source) {
-    case 'soundcloud':
-        soundCloudPlayer.pause();
-        break;
 
-    case 'appleMusic':
-        console.log('pause Applu Music');
-        break;
-
-    case 'spotify':
-        console.log('pause spotify');
-        break;
-
-    default:
-        break;
-    }
+function updatePlayer(currentSong) {
+    return {
+        type: UPDATE_PLAYER,
+        payload: {
+            currentSong,
+        },
+    };
 }
 
-export function playSong(source) {
-    switch (source) {
-    case 'soundcloud':
-        soundCloudPlayer.play();
-        break;
+//////////////////////////////////////////////////////////////////////////////
+//
+// Websocket Actions
+//
+//////////////////////////////////////////////////////////////////////////////
 
-    case 'appleMusic':
-        console.log('pause Applu Music');
-        break;
-
-    case 'spotify':
-        console.log('pause spotify');
-        break;
-
-    default:
-        break;
-    }
+export function sendPlayer(currentSong) {
+    ws.send(
+        JSON.stringify({
+            ...currentSong,
+        }),
+    );
 }
+
+function openSocket(stationRoute, dispatch) {
+    ws = new WebSocket(`ws://${BaseURI}/api${stationRoute}/ws`);
+    dispatch(setWebsocket(ws));
+    ws.onmessage = function (event) {
+        console.log(JSON.parse(event.data));
+        const data = JSON.parse(event.data);
+        if (data.station) {
+            dispatch(setStation(data.station));
+            dispatch(notification(data.message));
+        } else {
+            dispatch(updatePlayer(JSON.parse(event.data)));
+        }
+    };
+}
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// Database API Actions
+//
+//////////////////////////////////////////////////////////////////////////////
+
 
 export function nextSong() {
     const stationRoute = browserHistory.getCurrentLocation().pathname;
@@ -184,28 +189,7 @@ export function nextSong() {
         .then((res) => {
             return res.json().then((json) => {
                 if (res.ok) {
-                    console.log(json);
-                    switch (json.station.playing.song.source) {
-                    case 'soundcloud':
-                        SC.stream(`/tracks/${json.station.playing.song.song_id}`).then((player) => {
-                            soundCloudPlayer = player;
-                            soundCloudPlayer.play();
-                        });
-                        break;
-
-                    case 'appleMusic':
-                        console.log('play Applu Music');
-                        break;
-
-                    case 'spotify':
-                        console.log('play spotify');
-                        break;
-
-                    default:
-                        break;
-                    }
-
-                    // dispatch(setStation(json.station));
+                    sendPlayer(json.station.playing);
                 } else {
                     const error = {
                         status: res.status,
@@ -235,8 +219,8 @@ export function addSong(songRequest) {
         .then((res) => {
             return res.json().then((json) => {
                 if (res.ok) {
-                    console.log(json);
-                    dispatch(setStation(json.station));
+                    // console.log(json);
+                    // dispatch(setStation(json.station));
                 } else {
                     const error = {
                         status: res.status,
@@ -253,18 +237,6 @@ export function addSong(songRequest) {
     };
 }
 
-
-function openSocket(stationRoute, dispatch) {
-    const exampleSocket = new WebSocket(`ws://${BaseURI}/api${stationRoute}/ws`);
-    exampleSocket.onmessage = function (event) {
-        dispatch(setStation(JSON.parse(event.data).station));
-        // SC.stream(`/tracks/${JSON.parse(event.data).station.playing.song.song_id}`).then((player) => {
-        //     soundCloudPlayer = player;
-        //     soundCloudPlayer.play();
-        // });
-        dispatch(notification(JSON.parse(event.data).message));
-    };
-}
 
 export function getStation(stationRoute) {
     return (dispatch) => {
@@ -293,6 +265,14 @@ export function getStation(stationRoute) {
         });
     };
 }
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// Search
+//
+//////////////////////////////////////////////////////////////////////////////
+
 
 export function searchSpotify(query) {
     return (dispatch) => {
@@ -410,10 +390,9 @@ export function searchAll(query) {
             return;
         }
         // TODO if we want search to wait for all to load
-        // dispatch(loadingSearch());
+        dispatch(loadingSearch());
         dispatch(searchSoundcloud(query));
         // dispatch(searchSpotify(query));
         dispatch(searchAppleMusic(query));
     };
 }
-

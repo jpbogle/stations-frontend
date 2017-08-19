@@ -2,6 +2,7 @@ import {
     LOADING_STATION,
     LOADING_SEARCH,
     SET_STATION,
+    SET_WEBSOCKET,
     SET_SEARCH_VALUE,
     STATION_ERROR,
     SPOTIFY_ERROR,
@@ -10,6 +11,7 @@ import {
     SOUNDCLOUD_ERROR,
     APPLEMUSIC_ERROR,
     SEND_NOTIFICATION,
+    UPDATE_PLAYER,
 } from './stationActions';
 
 const noError = {
@@ -19,10 +21,17 @@ const noError = {
 };
 
 const initialState = {
+    player: {
+        song: {},
+        playing: false,
+        time: 0,
+    },
     station: {},
+    position: 0,
     loading: true,
     error: noError,
     notification: '',
+    ws: null,
     search: {
         value: '',
         spotify: {
@@ -59,6 +68,12 @@ export default function helloReducer(state = initialState, action) {
             ...state,
             station: payload.station,
             loading: false,
+        };
+
+    case SET_WEBSOCKET:
+        return {
+            ...state,
+            ws: payload.ws,
         };
 
     case LOADING_STATION:
@@ -177,6 +192,12 @@ export default function helloReducer(state = initialState, action) {
         return {
             ...state,
             notification: payload.message,
+        };
+
+    case UPDATE_PLAYER:
+        return {
+            ...state,
+            player: payload.currentSong,
         };
     default:
         return state;

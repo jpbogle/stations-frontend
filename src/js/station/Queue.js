@@ -23,8 +23,7 @@ class Queue extends Component {
 
     render() {
         let key = 0;
-        const sortedSongs = this.props.songs.sort((a, b) => a.votes > b.votes);
-        const songs = sortedSongs.map((song) => {
+        const songs = this.props.songs.map((song) => {
             key += 1;
             return (
                 <QueueSong

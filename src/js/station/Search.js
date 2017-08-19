@@ -40,6 +40,7 @@ class Search extends Component {
     static propTypes = {
         searchAll: PropTypes.func.isRequired,
         searchSoundcloud: PropTypes.func.isRequired,
+        searchValue: PropTypes.string.isRequired,
         results: PropTypes.object,
     };
 
@@ -124,9 +125,9 @@ class Search extends Component {
                 </div>
                 <div className="container" style={styles.searchContainer}>
                     <div className="content" style={{ ...styles.searchContent, ...styles.shadow }}>
-                        <ul id="spotify-search-results" class="shown" >
+                        <ul id="spotify-search-results">
                         </ul>
-                        <ul id="soundcloud-search-results" >
+                        <ul id="soundcloud-search-results">
                             {soundCloudSongs}
                         </ul>
                     </div>

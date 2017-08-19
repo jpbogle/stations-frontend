@@ -60,14 +60,11 @@ class Station extends Component {
 
     render() {
         let queue;
-        let player;
         if (this.props.loading) {
             queue = '';
-            player = '';
             // queue = <Loading />;
         } else {
             queue = <Queue songs={this.props.station.songs} />;
-            player = <Player song={this.props.station.playing.song} playing={this.props.station.playing.playing} />;
         }
 
         return (
@@ -81,7 +78,7 @@ class Station extends Component {
                     </div>
                 </HostHeader>
                 {queue}
-                {player}
+                <Player />
                 <div id="notify-popup-window">
                 </div>
             </div>

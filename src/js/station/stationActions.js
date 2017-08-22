@@ -165,8 +165,9 @@ function openSocket(stationRoute, dispatch) {
         if (data.station) {
             dispatch(setStation(data.station));
             dispatch(notification(data.message));
-        } else {
-            dispatch(updatePlayer(JSON.parse(event.data)));
+        }
+        if (data.player) {
+            dispatch(updatePlayer(data.player));
         }
     };
 }

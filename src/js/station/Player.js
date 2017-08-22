@@ -26,6 +26,7 @@ const PlayerInfo = styled.div`
     float: left;
     width: calc(100vw - 112px);
     display: flex;
+    position: relative;
 
     > * {
         float: left;

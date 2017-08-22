@@ -7,8 +7,9 @@ import QueueSong from './QueueSong';
 import * as Colors from '../common/Colors';
 
 const StyledQueue = styled.div`
-    height: 100%;
-    margin-bottom: 102px;
+    width: 100%;
+    position: absolute;
+    bottom: 112px;
 `;
 
 class Queue extends Component {

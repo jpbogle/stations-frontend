@@ -1,9 +1,0 @@
-.DS_Store
-.bookignore
-docs-dist
-.eslintrc
-.git
-.gitignore
-book.json
-node_modules
-yarn.lock

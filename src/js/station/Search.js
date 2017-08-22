@@ -50,6 +50,7 @@ class Search extends Component {
 
     constructor(props) {
         super(props);
+        // this.handleMouseMove = throttle(::this.handleMouseMove, 50, { trailing: true, leading: true });
         this.handleChange = :: this.handleChange;
     }
 

@@ -16,7 +16,7 @@ http {
 
         location / {
             #path to the static files
-            root /Users/Jeremy/Documents/Stations/stations-frontend/dist/app;
+            root /Users/Jeremy/Documents/Stations/stations-frontend/dist;
             index index.html index.htm;
 
             try_files $uri $uri/ /index.html;

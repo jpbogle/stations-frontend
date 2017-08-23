@@ -1,5 +1,6 @@
 import { browserHistory } from 'react-router';
 import jwt from 'jsonwebtoken';
+import SC from 'soundcloud';
 import BaseURI from '../common/BaseURI';
 
 export const LOADING_SEARCH = 'LOADING_SEARCH';
@@ -20,6 +21,11 @@ let appleMusicToken;
 // TODO get the private key from the backend...
 jwt.sign({ iss: '2EXVDJ88N2' }, '-----BEGIN PRIVATE KEY-----\nMIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIid3+wnYhhPXSvrjH7BO1o7KgacJpVIYIrufxmiKSgCgCgYIKoZIzj0DAQehRANCAARCdYFP5H8z7/Z9JOBk+aNzxxuxnqmNz/l2wGpaUo8Zu//W3DYR+x6nALb23XpSDHl/2mAqMuKzUOqaxOO3Axeu\n-----END PRIVATE KEY-----', { algorithm: 'ES256', keyid: 'SMJSB9AGUQ', expiresIn: '1000000' }, (err, token) => {
     appleMusicToken = token;
+});
+
+const dev = true;
+SC.initialize({
+    client_id: dev ? 'oG45iJyWRj8McdpinDKk4QSgRm8C1VzL' : 'GwGiygexslzpWR05lHIGqMBPPN0blbni',
 });
 
 let ws;

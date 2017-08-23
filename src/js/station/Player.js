@@ -26,7 +26,6 @@ const PlayerInfo = styled.div`
     float: left;
     width: calc(100vw - 112px);
     display: flex;
-    position: relative;
 
     > * {
         float: left;
@@ -120,12 +119,13 @@ class Player extends Component {
         switch (source) {
         case 'soundcloud':
             SC.stream(`/tracks/${song_id}`).then((player) => {
+                console.log(player);
                 this.setState({
                     soundCloudPlayer: player,
                     position: position + (Date.now() - timestamp),
                 }, () => {
-
-                    this.playSong();
+                    this.sendPlay();
+                    // this.playSong();
                 });
             });
             break;
@@ -137,13 +137,12 @@ class Player extends Component {
     playSong() {
         clearInterval(this.timer);
         this.timer = setInterval(() => this.changeTime(), 100);
-        this.state.soundCloudPlayer.on('time', () => {
-            this.state.soundCloudPlayer.off('time');
-            this.state.soundCloudPlayer.seek(this.state.position);
-        });
         switch (this.props.song.source) {
         case 'soundcloud':
             this.state.soundCloudPlayer.play();
+            this.state.soundCloudPlayer.setVolume(0);
+            this.state.soundCloudPlayer.on('seeked', () => this.state.soundCloudPlayer.setVolume(1));
+            setTimeout(() => this.state.soundCloudPlayer.seek(this.state.position), 1000);
             break;
         case 'spotify':
             break;

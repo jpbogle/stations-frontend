@@ -164,7 +164,11 @@ export function sendPlayer(currentSong) {
 
 function openSocket(stationRoute, dispatch) {
     ws = new WebSocket(`ws://${BaseURI}/api${stationRoute}/ws`);
+    window.onbeforeunload = () => {
+        ws.close();
+    };
     dispatch(setWebsocket(ws));
+
     ws.onmessage = function (event) {
         console.log(JSON.parse(event.data));
         const data = JSON.parse(event.data);
@@ -248,28 +252,28 @@ export function addSong(songRequest) {
 export function getStation(stationRoute) {
     return (dispatch) => {
         openSocket(stationRoute, dispatch);
-        dispatch(loadingStation());
-        return fetch(`http://${BaseURI}/api${stationRoute}`, {
-            method: 'GET',
-            mode: 'cors',
-        })
-        .then((res) => {
-            return res.json().then((json) => {
-                if (res.ok) {
-                    dispatch(setStation(json.station));
-                } else {
-                    const error = {
-                        status: res.status,
-                        type: json.error_type,
-                        message: json.error_message,
-                    };
-                    dispatch(stationError(error));
-                }
-            });
-        })
-        .catch((err) => {
-            setTimeout(() => dispatch(stationError({ status: 500, type: 'Internal server error', message: err })), 1000);
-        });
+        // dispatch(loadingStation());
+        // return fetch(`http://${BaseURI}/api${stationRoute}`, {
+        //     method: 'GET',
+        //     mode: 'cors',
+        // })
+        // .then((res) => {
+        //     return res.json().then((json) => {
+        //         if (res.ok) {
+        //             dispatch(setStation(json.station));
+        //         } else {
+        //             const error = {
+        //                 status: res.status,
+        //                 type: json.error_type,
+        //                 message: json.error_message,
+        //             };
+        //             dispatch(stationError(error));
+        //         }
+        //     });
+        // })
+        // .catch((err) => {
+        //     setTimeout(() => dispatch(stationError({ status: 500, type: 'Internal server error', message: err })), 1000);
+        // });
     };
 }
 

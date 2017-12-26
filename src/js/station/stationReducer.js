@@ -2,6 +2,7 @@ import {
     LOADING_STATION,
     LOADING_SEARCH,
     SET_STATION,
+    SET_ADMIN,
     SET_WEBSOCKET,
     SET_SEARCH_VALUE,
     STATION_ERROR,
@@ -11,6 +12,7 @@ import {
     SOUNDCLOUD_ERROR,
     APPLEMUSIC_ERROR,
     SEND_NOTIFICATION,
+    REMOVE_NOTIFICATION,
     UPDATE_PLAYER,
 } from './stationActions';
 
@@ -30,7 +32,9 @@ const initialState = {
     position: 0,
     loading: true,
     error: noError,
-    notification: '',
+    notifications: {},
+    notificationNum: 0,
+    admin: false,
     ws: null,
     search: {
         value: '',
@@ -93,7 +97,18 @@ export default function helloReducer(state = initialState, action) {
             ...state,
             search: {
                 ...state.search,
-                loading: true,
+                spotify: {
+                    ...state.search.soundcloud,
+                    loading: true,
+                },
+                soundcloud: {
+                    ...state.search.soundcloud,
+                    loading: true,
+                },
+                appleMusic: {
+                    ...state.search.soundcloud,
+                    loading: true,
+                },
             },
         };
 
@@ -187,12 +202,34 @@ export default function helloReducer(state = initialState, action) {
                 },
             },
         };
+    case SET_ADMIN:
+        return {
+            ...state,
+            admin: payload.admin,
+        };
 
     case SEND_NOTIFICATION:
         return {
             ...state,
-            notification: payload.message,
+            notificationNum: state.notificationNum + 1,
+            notifications: {
+                ...state.notifications,
+                [state.notificationNum]: {
+                    header: payload.header,
+                    message: payload.message,
+                },
+            },
         };
+
+    case REMOVE_NOTIFICATION: {
+        const newNotifications = { ...state.notifications };
+        delete newNotifications[payload.id];
+
+        return {
+            ...state,
+            notifications: newNotifications,
+        };
+    }
 
     case UPDATE_PLAYER:
         return {

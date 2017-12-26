@@ -6,10 +6,10 @@ import styled from 'styled-components';
 import { getStation } from './stationActions';
 import Header from '../common/Header';
 import Loading from '../common/Loading';
+import Notifications from './Notifications';
 import Search from './Search';
 import Player from './Player';
 import Queue from './Queue';
-import * as Colors from '../common/Colors';
 
 
 const HostHeader = styled.div`
@@ -79,8 +79,7 @@ class Station extends Component {
                 </HostHeader>
                 {queue}
                 <Player />
-                <div id="notify-popup-window">
-                </div>
+                <Notifications />
             </div>
         );
     }

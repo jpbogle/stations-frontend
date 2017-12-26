@@ -6,6 +6,7 @@ import BaseURI from '../common/BaseURI';
 export const LOADING_SEARCH = 'LOADING_SEARCH';
 export const LOADING_STATION = 'LOADING_STATION';
 export const SET_STATION = 'SET_STATION';
+export const SET_ADMIN = 'SET_ADMIN';
 export const SET_WEBSOCKET = 'SET_WEBSOCKET';
 export const UPDATE_PLAYER = 'UPDATE_PLAYER';
 export const SET_SEARCH_VALUE = 'SET_SEARCH_VALUE';
@@ -16,6 +17,7 @@ export const SPOTIFY_ERROR = 'SPOTIFY_ERROR';
 export const SOUNDCLOUD_ERROR = 'SOUNDCLOUD_ERROR';
 export const APPLEMUSIC_ERROR = 'APPLEMUSIC_ERROR';
 export const SEND_NOTIFICATION = 'SEND_NOTIFICATION';
+export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
 
 let appleMusicToken;
 // TODO get the private key from the backend...
@@ -52,6 +54,15 @@ function setStation(station) {
         type: SET_STATION,
         payload: {
             station,
+        },
+    };
+}
+
+function setAdmin(admin) {
+    return {
+        type: SET_ADMIN,
+        payload: {
+            admin,
         },
     };
 }
@@ -130,11 +141,21 @@ function appleMusicError(error) {
     };
 }
 
-function notification(message) {
+function notification(header, message) {
     return {
         type: SEND_NOTIFICATION,
         payload: {
+            header,
             message,
+        },
+    };
+}
+
+export function removeNotification(id) {
+    return {
+        type: REMOVE_NOTIFICATION,
+        payload: {
+            id,
         },
     };
 }
@@ -174,11 +195,12 @@ function openSocket(stationRoute, dispatch) {
         const data = JSON.parse(event.data);
         if (data.station) {
             dispatch(setStation(data.station));
-            dispatch(notification(data.message));
+            dispatch(notification(data.header, data.message));
         }
         if (data.player) {
             dispatch(updatePlayer(data.player));
         }
+        dispatch(setAdmin(data.admin));
     };
 }
 

@@ -6,6 +6,14 @@ import styled from 'styled-components';
 import SearchItem from './SearchItem';
 import { searchAll, searchSoundcloud } from './stationActions';
 import * as Colors from '../common/Colors';
+import LoadingSpin from '../common/LoadingSpin';
+
+const LoadingContainer = styled.div`
+    text-align: center;
+    svg {
+        width: 100px;
+    }
+`;
 
 const SearchBox = styled.div`
     position: fixed;
@@ -41,6 +49,7 @@ class Search extends Component {
         searchAll: PropTypes.func.isRequired,
         searchSoundcloud: PropTypes.func.isRequired,
         searchValue: PropTypes.string.isRequired,
+        loadingSoundcloud: PropTypes.bool.isRequired,
         results: PropTypes.object,
     };
 
@@ -67,17 +76,22 @@ class Search extends Component {
 
     render() {
         let soundCloudKey = 0;
-        const soundCloudSongs = this.props.results.soundcloud.songs.map((song) => {
-            soundCloudKey += 1;
-            return (
-                <SearchItem
-                  key={soundCloudKey}
-                  song={song}
-                  source="soundcloud"
-                  postAdd={() => this.handleChange('')}
-                />
-            );
-        });
+
+        const soundCloudSongs = this.props.loadingSoundcloud ?
+            (<LoadingContainer>
+                <LoadingSpin />
+            </LoadingContainer>) :
+            this.props.results.soundcloud.songs.map((song) => {
+                soundCloudKey += 1;
+                return (
+                    <SearchItem
+                      key={soundCloudKey}
+                      song={song}
+                      source="soundcloud"
+                      postAdd={() => this.handleChange('')}
+                    />
+                );
+            });
 
         let appleMusicKey = 0;
         const appleMusicSongs = this.props.results.appleMusic.songs.map((song) => {
@@ -146,6 +160,7 @@ function mapStateToProps(state) {
     return {
         results: state.station.search,
         searchValue: state.station.search.value,
+        loadingSoundcloud: state.station.search.soundcloud.loading,
     };
 }
 /**

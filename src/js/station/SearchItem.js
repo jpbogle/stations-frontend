@@ -5,6 +5,17 @@ import { bindActionCreators } from 'redux';
 import { addSong } from './stationActions';
 import styled from 'styled-components';
 import * as Colors from '../common/Colors';
+import SoundcloudLogo from '../common/SoundcloudLogo';
+
+const AlbumOuter = styled.div`
+    height: 80px;
+    width: 80px;
+
+    svg {
+        width: 80px;
+        height: 80px;
+    }
+`;
 
 const StyledQueueSong = styled.li`
     margin-left: auto;
@@ -108,9 +119,15 @@ class SearchItem extends Component {
                 whiteSpace: 'nowrap',
             },
         };
+        const albumCover = album_url ?
+            <img alt="album" src={album_url} /> :
+            (<AlbumOuter>
+                <SoundcloudLogo height="200px" width="200px" />
+            </AlbumOuter>);
+
         return (
             <StyledQueueSong onClick={this.handleClick}>
-                <img alt="album" src={album_url} />
+                {albumCover}
                 <div style={styles.songInfo}>
                     <p style={styles.songName}>{title}</p>
                     <p style={styles.artistName}>{artist}</p>

@@ -14,7 +14,7 @@ export default function createStoreAndHistory(initialState) {
         initialState,
         compose(
             applyMiddleware(thunk, routerMiddleware(history)),
-            DevTools.instrument(),
+            // DevTools.instrument(),
         ),
     );
     const syncedHistory = syncHistoryWithStore(history, store);

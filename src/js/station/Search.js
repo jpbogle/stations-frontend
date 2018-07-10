@@ -41,6 +41,29 @@ const SearchBox = styled.div`
         outline: none;
         border-bottom-color: ${Colors.highlightC};
     }
+    ul {
+        display: inline-block;
+        width: 50%;
+        float: left;
+        div {
+            height: 25px;
+            opacity: 1;
+            color: white;
+            text-align: center;
+        }
+    }
+    #appleMusic-search-results-bar {
+        background-color: #888;
+    }
+    #soundcloud-search-results-bar {
+        background-color: ${Colors.soundcloudC}
+    }
+
+    #soundcloud-logo {
+      margin-top: 6px;
+      height: 14px;
+      width: 91px;
+    }
 `;
 
 class Search extends Component {
@@ -50,6 +73,7 @@ class Search extends Component {
         searchSoundcloud: PropTypes.func.isRequired,
         searchValue: PropTypes.string.isRequired,
         loadingSoundcloud: PropTypes.bool.isRequired,
+        loadingAppleMusic: PropTypes.bool.isRequired,
         results: PropTypes.object,
     };
 
@@ -94,7 +118,11 @@ class Search extends Component {
             });
 
         let appleMusicKey = 0;
-        const appleMusicSongs = this.props.results.appleMusic.songs.map((song) => {
+        const appleMusicSongs = this.props.loadingAppleMusic ?
+            (<LoadingContainer>
+                <LoadingSpin />
+            </LoadingContainer>) :
+            this.props.results.appleMusic.songs.map((song) => {
             appleMusicKey += 1;
             return (
                 <SearchItem
@@ -113,6 +141,7 @@ class Search extends Component {
             searchContent: {
                 overflowY: 'scroll',
                 padding: '0',
+                minHeight: '150px',
                 maxHeight: 'calc(100vh - 304px)',
                 borderBottom: 'none',
                 overflowX: 'visible',
@@ -121,6 +150,7 @@ class Search extends Component {
                 top: '0',
                 borderBottomLeftRadius: '4px',
                 borderBottomRightRadius: '4px',
+                opacity: `${this.props.searchValue.length > 0 ? 1: 0}`,
             },
             shadow: {
                 WebkitBoxShadow: '12px 12px 64px -12px rgba(0,0,0,0.75)',
@@ -140,9 +170,12 @@ class Search extends Component {
                 </div>
                 <div className="container" style={styles.searchContainer}>
                     <div className="content" style={{ ...styles.searchContent, ...styles.shadow }}>
-                        <ul id="spotify-search-results">
+                        <ul id="appleMusic-search-results">
+                            <div id="appleMusic-search-results-bar">apple music</div>
+                            {appleMusicSongs}
                         </ul>
                         <ul id="soundcloud-search-results">
+                            <div id="soundcloud-search-results-bar">soundcloud</div>
                             {soundCloudSongs}
                         </ul>
                     </div>
@@ -161,6 +194,7 @@ function mapStateToProps(state) {
         results: state.station.search,
         searchValue: state.station.search.value,
         loadingSoundcloud: state.station.search.soundcloud.loading,
+        loadingAppleMusic: state.station.search.appleMusic.loading,
     };
 }
 /**

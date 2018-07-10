@@ -87,6 +87,7 @@ class Dashboard extends Component {
                 >
                     <StationSmall
                       name={station.name}
+                      username={this.props.user.username}
                       albumCover={station.songs.length > 0 ? station.songs[0].album_url : ''}
                       numSongs={station.songs ? station.songs.length : 0}
                       numAdmins={stations.admins ? station.admins.length : 0}

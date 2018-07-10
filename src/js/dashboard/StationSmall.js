@@ -9,25 +9,25 @@ const StyledStation = styled.div`
     cursor: pointer;
     transition: .2s;
     padding: 2px 12px;
-    img, i {
+    img {
         width: 80px;
         height: 80px;
         border-radius: 40px;
         float: left;
     }
     i {
+        margin-top: 25px;
+        color: #aaa;
         padding: 2px;
-        background-color: #ddd;
-        width: 78px;
-        height: 78px;
         border-radius: 40px;
+        float: right;
+        transition: .1s all;
+        &:hover {
+            color: #888;
+            transform: scale(1.1);
+        }
     }
-    i::before {
-        color: #eee;
-        position: relative;
-        left: 15px;
-        top: 8px;
-    }
+
     div {
         float: left;
         padding-left: 6px;
@@ -44,6 +44,7 @@ const StyledStation = styled.div`
     }
     &:hover {
         background: #ddd;
+    }
 `;
 
 

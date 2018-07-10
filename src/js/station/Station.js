@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
-import { getStation } from './stationActions';
+import { getStation, resetStation } from './stationActions';
 import Header from '../common/Header';
 import Loading from '../common/Loading';
 import Notifications from './Notifications';
@@ -51,6 +51,7 @@ class Station extends Component {
         stationName: PropTypes.string.isRequired,
         stationHost: PropTypes.string.isRequired,
         getStation: PropTypes.func.isRequired,
+        resetStation: PropTypes.func.isRequired,
         station: PropTypes.object.isRequired,
     }
 
@@ -69,7 +70,7 @@ class Station extends Component {
 
         return (
             <div>
-                <Header admin logoAnimate station={this.props.stationName} />
+                <Header admin logoAnimate station={this.props.stationName} stationHost={this.props.stationHost} resetStation={this.props.resetStation} />
                 <Search />
                 <HostHeader shown={true}>
                     <div>
@@ -103,6 +104,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
         getStation,
+        resetStation,
     }, dispatch);
 }
 

@@ -7,3 +7,4 @@ export const grayC = '#DDD';
 export const pinkC = '#BE8DBF';
 export const spotifyC = '#2ebd59';
 export const spotifyDarkC = '#1e9642';
+export const soundcloudC = '#f50';

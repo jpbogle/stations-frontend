@@ -44,13 +44,21 @@ export default class Header extends Component {
         dashboard: PropTypes.bool,
         admin: PropTypes.bool,
         logoAnimate: PropTypes.bool,
+        stationHost: PropTypes.string,
+        resetStation: PropTypes.func,
     };
 
     static defaultProps = {
         station: '',
+        stationHost: '',
         dashboard: false,
         admin: false,
         logoAnimate: false,
+    }
+
+    constructor(props) {
+        super(props);
+        this.handleReset = :: this.handleReset;
     }
 
     handleEdit() {
@@ -59,6 +67,10 @@ export default class Header extends Component {
 
     handleMix() {
 
+    }
+
+    handleReset() {
+        this.props.resetStation(this.props.stationHost, this.props.station);
     }
 
     render() {
@@ -91,7 +103,7 @@ export default class Header extends Component {
                             <Logo animate={logoAnimate} />
                         </LogoContainer>
                         <ul style={styles.leftItems}>
-                            <NavItem shown={station}>{station}</NavItem>
+                            <NavItem shown={station} onClick={this.handleReset}>{station}</NavItem>
                         </ul>
                     </div>
                     <div style={styles.navBarRight}>

@@ -5,7 +5,18 @@ import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
 import SC from 'soundcloud';
 import { nextSong, sendPlayer } from './stationActions';
+import SoundcloudLogo from '../common/SoundcloudLogo';
 
+const AlbumOuter = styled.div`
+    width: 112px;
+    height: 112px;
+    float: left;
+
+    svg {
+        width: 112px;
+        height: 112px;
+    }
+`;
 
 const StyledPlayer = styled.div`
     position: fixed;
@@ -95,10 +106,12 @@ class Player extends Component {
     constructor(props) {
         super(props);
         const dev = true;
+
         SC.initialize({
             client_id: dev ? 'oG45iJyWRj8McdpinDKk4QSgRm8C1VzL' : 'GwGiygexslzpWR05lHIGqMBPPN0blbni',
         });
         this.state = {
+            appleMusicPlayer: null,
             soundCloudPlayer: null,
             position: 0,
             muted: false,
@@ -125,6 +138,14 @@ class Player extends Component {
     }
 
     setSong(source, song_id, position, timestamp) {
+        console.log(this.state);
+        try {
+            this.state.appleMusicPlayer.pause();
+            this.state.soundCloudPlayer.pause();
+        } catch (err) {
+
+        }
+
         switch (source) {
         case 'soundcloud':
             this.position = position;
@@ -134,6 +155,18 @@ class Player extends Component {
                 // this.playSong(position + (Date.now() - timestamp));
                 this.setState({
                     soundCloudPlayer: player,
+                    position: position + (Date.now() - timestamp),
+                }, () => {
+                    this.playSong(this.state.position);
+                });
+            });
+            break;
+        case 'appleMusic':
+            console.log("applemusicsong");
+            const appleMusic = MusicKit.getInstance();
+            appleMusic.setQueue({ song: song_id }).then(() => {
+                this.setState({
+                    appleMusicPlayer: appleMusic,
                     position: position + (Date.now() - timestamp),
                 }, () => {
                     this.playSong(this.state.position);
@@ -162,6 +195,11 @@ class Player extends Component {
         case 'spotify':
             break;
         case 'appleMusic':
+            console.log(this.state.appleMusic)
+            this.state.appleMusicPlayer.play();
+            const elapsedTime = Date.now() - this.receivedTime;
+            const playPosition = position + elapsedTime + 1000;
+            this.state.appleMusicPlayer.seekToTime(playPosition + 1000);
             break;
         default:
             break;
@@ -177,6 +215,7 @@ class Player extends Component {
         case 'spotify':
             break;
         case 'appleMusic':
+            this.state.appleMusicPlayer.pause();
             break;
         default:
             break;
@@ -233,7 +272,7 @@ class Player extends Component {
     }
 
     render() {
-        const { title, artist, album_url } = this.props.song;
+        const { title, artist, album_url, source } = this.props.song;
         const playing = this.props.playing;
         const muted = this.state.muted;
         const styles = {
@@ -317,10 +356,29 @@ class Player extends Component {
                 <i style={styles.unmuteButton} className="fa fa-volume-off fa-2x" aria-hidden="true" onClick={() => this.unmute()} />
             </div>
         );
+        let albumCover = <img alt="albumCover" src={album_url} style={{ visibility: album_url === '' ? 'collapse' : 'visible' }} />;
+        if (album_url === '') {
+            switch (source) {
+            case 'soundcloud': {
+                albumCover = (
+                    <AlbumOuter>
+                        <SoundcloudLogo height="200px" width="200px" />
+                    </AlbumOuter>);
+                break;
+            }
+            case 'spotify':
+                break;
+            case 'appleMusic':
+                break;
+            default:
+                break;
+            }
+        }
+
 
         return (
             <StyledPlayer>
-                <img alt="albumCover" src={album_url} style={{ visibility: album_url === '' ? 'collapse' : 'visible' }} />
+                {albumCover}
                 <PlayerInfo>
                     <div style={styles.progressBarContainer}>
                         <div style={styles.progressBar} />

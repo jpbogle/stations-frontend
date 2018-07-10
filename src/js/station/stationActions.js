@@ -23,12 +23,16 @@ let appleMusicToken;
 // TODO get the private key from the backend...
 jwt.sign({ iss: '2EXVDJ88N2' }, '-----BEGIN PRIVATE KEY-----\nMIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIid3+wnYhhPXSvrjH7BO1o7KgacJpVIYIrufxmiKSgCgCgYIKoZIzj0DAQehRANCAARCdYFP5H8z7/Z9JOBk+aNzxxuxnqmNz/l2wGpaUo8Zu//W3DYR+x6nALb23XpSDHl/2mAqMuKzUOqaxOO3Axeu\n-----END PRIVATE KEY-----', { algorithm: 'ES256', keyid: 'SMJSB9AGUQ', expiresIn: '1000000' }, (err, token) => {
     appleMusicToken = token;
+    MusicKit.configure({
+        developerToken: appleMusicToken,
+    });
 });
 
 const dev = true;
 SC.initialize({
     client_id: dev ? 'oG45iJyWRj8McdpinDKk4QSgRm8C1VzL' : 'GwGiygexslzpWR05lHIGqMBPPN0blbni',
 });
+
 
 let ws;
 //////////////////////////////////////////////////////////////////////////////
@@ -201,6 +205,33 @@ function openSocket(stationRoute, dispatch) {
             dispatch(updatePlayer(data.player));
         }
         dispatch(setAdmin(data.admin));
+    };
+}
+
+
+export function resetStation(username, stationName) {
+    return (dispatch) => {
+        return fetch(`http://${BaseURI}/api${username}/reset`, {
+            method: 'GET',
+            mode: 'cors',
+        })
+        .then((res) => {
+            return res.json().then((json) => {
+                if (res.ok) {
+                    browserHistory.push(`/${username}/${json.station.name}`);
+                } else {
+                    const error = {
+                        status: res.status,
+                        type: json.error_type,
+                        message: json.error_message,
+                    };
+                    dispatch(stationError(error));
+                }
+            });
+        })
+        .catch((err) => {
+            setTimeout(() => dispatch(stationError({ status: 500, type: 'Internal server error', message: err })), 1000);
+        });
     };
 }
 

@@ -242,12 +242,16 @@ class Player extends Component {
     // ADMIN ONLY
     // Only admin websockets can receive
     sendPlay() {
-        sendPlayer({
-            song: this.props.song,
-            playing: true,
-            position: this.state.position,
-            timestamp: Date.now(),
-        });
+        if (!this.props.song) {
+            this.props.nextSong();
+        } else {
+            sendPlayer({
+                song: this.props.song,
+                playing: true,
+                position: this.state.position,
+                timestamp: Date.now(),
+            });
+        }
     }
 
     changeTime() {

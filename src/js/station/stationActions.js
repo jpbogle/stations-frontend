@@ -165,6 +165,7 @@ export function removeNotification(id) {
 }
 
 function updatePlayer(currentSong) {
+    console.log(currentSong);
     return {
         type: UPDATE_PLAYER,
         payload: {
@@ -200,6 +201,9 @@ function openSocket(stationRoute, dispatch) {
         if (data.station) {
             dispatch(setStation(data.station));
             dispatch(notification(data.header, data.message));
+        }
+        if (data.header === "Next Song") {
+            dispatch(updatePlayer(data.station.playing));
         }
         if (data.player) {
             dispatch(updatePlayer(data.player));
@@ -253,7 +257,7 @@ export function nextSong() {
         .then((res) => {
             return res.json().then((json) => {
                 if (res.ok) {
-                    sendPlayer(json.station.playing);
+                    // sendPlayer(json.station.playing);
                 } else {
                     const error = {
                         status: res.status,

@@ -242,7 +242,7 @@ class Player extends Component {
     // ADMIN ONLY
     // Only admin websockets can receive
     sendPlay() {
-        if (!this.props.song) {
+        if (this.props.song.song_id === '') {
             this.props.nextSong();
         } else {
             sendPlayer({

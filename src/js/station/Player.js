@@ -258,7 +258,8 @@ class Player extends Component {
         this.setState({
             position: this.state.position + 100,
         }, () => {
-            if (this.state.position >= this.props.song.duration) {
+            if (this.state.position >= this.props.song.duration && this.props.playing) {
+                console.log("song ended, new song")
                 this.props.nextSong();
             }
         });

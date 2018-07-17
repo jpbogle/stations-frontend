@@ -6,10 +6,13 @@ import styled from 'styled-components';
 import QueueSong from './QueueSong';
 import * as Colors from '../common/Colors';
 
+
 const StyledQueue = styled.div`
     width: 100%;
     position: absolute;
     bottom: 112px;
+    max-height: 60vh;
+    overflow: scroll;
 `;
 
 class Queue extends Component {
@@ -21,6 +24,7 @@ class Queue extends Component {
     static defaultProps = {
         songs: [],
     }
+
 
     render() {
         let key = 0;

@@ -74,8 +74,8 @@ class Station extends Component {
                 <Search />
                 <HostHeader shown={true}>
                     <div>
-                        <p>what&apos;s up next?</p>
-                        <h1>http://localhost:4000{this.props.stationHost}</h1>
+                        <p>share link</p>
+                        <h1>http://stations.live{this.props.stationHost}</h1>
                     </div>
                 </HostHeader>
                 {queue}

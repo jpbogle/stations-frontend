@@ -301,6 +301,36 @@ export function addSong(songRequest) {
     };
 }
 
+export function sendVote(voteRequest) {
+    const stationRoute = browserHistory.getCurrentLocation().pathname;
+    return (dispatch) => {
+        dispatch(loadingStation());
+        return fetch(`http://${BaseURI}/api${stationRoute}/songs/vote`, {
+            method: 'POST',
+            body: JSON.stringify(voteRequest),
+            mode: 'cors',
+        })
+        .then((res) => {
+            return res.json().then((json) => {
+                if (res.ok) {
+                    // console.log(json);
+                    // dispatch(setStation(json.station));
+                } else {
+                    const error = {
+                        status: res.status,
+                        type: json.error_type,
+                        message: json.error_message,
+                    };
+                    dispatch(stationError(error));
+                }
+            });
+        })
+        .catch((err) => {
+            setTimeout(() => dispatch(stationError({ status: 500, type: 'Internal server error', message: err })), 1000);
+        });
+    };
+}
+
 
 export function getStation(stationRoute) {
     return (dispatch) => {

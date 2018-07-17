@@ -3,8 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
+import ScrollAnim from 'rc-scroll-anim';
 import * as Colors from '../common/Colors';
 import SoundcloudLogo from '../common/SoundcloudLogo';
+import { sendVote } from './stationActions';
+
+const ScrollParallax = ScrollAnim.Parallax;
 
 const AlbumOuter = styled.div`
     height: 80px;
@@ -126,8 +130,11 @@ class QueueSong extends Component {
             artist: PropTypes.string,
             album_cover: PropTypes.string,
             votes: PropTypes.number,
+            source: PropTypes.string,
+            song_id: PropTypes.string,
         }).isRequired,
         stationHost: PropTypes.string.isRequired,
+        sendVote: PropTypes.func.isRequired,
         // addSong: PropTypes.func.isRequired,
     }
 
@@ -146,6 +153,11 @@ class QueueSong extends Component {
             ...this.state,
             upVoted: true,
         });
+        this.props.sendVote({
+            source: this.props.song.source,
+            source_id: this.props.song.song_id,
+            action: 'upvote',
+        });
     }
 
     handleDownVote() {
@@ -153,10 +165,14 @@ class QueueSong extends Component {
             ...this.state,
             downVoted: true,
         });
-        // this.props.addSong({
 
-        // });
+        this.props.sendVote({
+            source: this.props.song.source,
+            source_id: this.props.song.song_id,
+            action: 'downvote',
+        });
     }
+
 
     render() {
         const { title, artist, album_url, votes } = this.props.song;
@@ -227,7 +243,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-
+        sendVote,
     }, dispatch);
 }
 

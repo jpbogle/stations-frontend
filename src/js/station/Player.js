@@ -141,6 +141,10 @@ class Player extends Component {
         console.log(this.state);
         try {
             this.state.appleMusicPlayer.pause();
+        } catch (err) {
+
+        }
+        try {
             this.state.soundCloudPlayer.pause();
         } catch (err) {
 
@@ -195,11 +199,12 @@ class Player extends Component {
         case 'spotify':
             break;
         case 'appleMusic':
-            console.log(this.state.appleMusic)
+            console.log(this.state.appleMusicPlayer)
             this.state.appleMusicPlayer.play();
             const elapsedTime = Date.now() - this.receivedTime;
             const playPosition = position + elapsedTime + 1000;
-            this.state.appleMusicPlayer.seekToTime(playPosition + 1000);
+            this.state.appleMusicPlayer.player.currentPlaybackProgress = playPosition + 1000;
+            console.log(this.state.appleMusicPlayer);
             break;
         default:
             break;

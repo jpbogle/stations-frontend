@@ -12,6 +12,7 @@ export const UPDATE_PLAYER = 'UPDATE_PLAYER';
 export const SET_SEARCH_VALUE = 'SET_SEARCH_VALUE';
 export const SET_SOUNDCLOUD_SONGS = 'SET_SOUNDCLOUD_SONGS';
 export const SET_APPLE_MUSIC_SONGS = 'SET_APPLE_MUSIC_SONGS';
+export const SET_SPOTIFY_SONGS = 'SET_SPOTIFY_SONGS';
 export const STATION_ERROR = 'STATION_ERROR';
 export const SPOTIFY_ERROR = 'SPOTIFY_ERROR';
 export const SOUNDCLOUD_ERROR = 'SOUNDCLOUD_ERROR';
@@ -19,12 +20,34 @@ export const APPLEMUSIC_ERROR = 'APPLEMUSIC_ERROR';
 export const SEND_NOTIFICATION = 'SEND_NOTIFICATION';
 export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
 
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// Initialization
+//
+//////////////////////////////////////////////////////////////////////////////
+
 let appleMusicToken;
-// TODO get the private key from the backend...
-jwt.sign({ iss: '2EXVDJ88N2' }, '-----BEGIN PRIVATE KEY-----\nMIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIid3+wnYhhPXSvrjH7BO1o7KgacJpVIYIrufxmiKSgCgCgYIKoZIzj0DAQehRANCAARCdYFP5H8z7/Z9JOBk+aNzxxuxnqmNz/l2wGpaUo8Zu//W3DYR+x6nALb23XpSDHl/2mAqMuKzUOqaxOO3Axeu\n-----END PRIVATE KEY-----', { algorithm: 'ES256', keyid: 'SMJSB9AGUQ', expiresIn: '1000000' }, (err, token) => {
-    appleMusicToken = token;
-    MusicKit.configure({
-        developerToken: appleMusicToken,
+
+document.addEventListener('musickitloaded', () => {
+    fetch(`http://${BaseURI}/api/token`, {
+        method: 'GET',
+        mode: 'cors',
+    })
+    .then((res) => {
+        res.json().then((json) => {
+            if (res.ok) {
+                appleMusicToken = json.token;
+                MusicKit.configure({
+                    developerToken: appleMusicToken,
+                });
+            } else {
+
+            }
+        });
+    })
+    .catch((err) => {
+
     });
 });
 
@@ -109,6 +132,16 @@ function setAppleMusicSongs(songs, query) {
     };
 }
 
+function setSpotifySongs(songs, query) {
+    return {
+        type: SET_SPOTIFY_SONGS,
+        payload: {
+            songs,
+            query,
+        },
+    };
+}
+
 function stationError(error) {
     return {
         type: STATION_ERROR,
@@ -165,7 +198,6 @@ export function removeNotification(id) {
 }
 
 function updatePlayer(currentSong) {
-    console.log(currentSong);
     return {
         type: UPDATE_PLAYER,
         payload: {
@@ -195,7 +227,7 @@ function openSocket(stationRoute, dispatch) {
     };
     dispatch(setWebsocket(ws));
 
-    ws.onmessage = function (event) {
+    ws.onmessage = (event) => {
         console.log(JSON.parse(event.data));
         const data = JSON.parse(event.data);
         if (data.station) {
@@ -440,6 +472,7 @@ export function searchSoundcloud(query) {
 
 export function searchAppleMusic(query) {
     const term = query.replace(/ /g, '+');
+    console.log(appleMusicToken);
     return (dispatch) => {
         return fetch(`https://api.music.apple.com/v1/catalog/us/search?term=${term}?&types=artists,songs&limit=15`, {
             method: 'GET',
@@ -487,7 +520,7 @@ export function searchAll(query) {
         if (query === '') {
             return;
         }
-        // TODO if we want search to wait for all to load
+        // TODO have search to wait for all to load to display at once?
         dispatch(loadingSearch());
         dispatch(searchSoundcloud(query));
         // dispatch(searchSpotify(query));

@@ -106,7 +106,6 @@ class Player extends Component {
     constructor(props) {
         super(props);
         const dev = true;
-
         SC.initialize({
             client_id: dev ? 'oG45iJyWRj8McdpinDKk4QSgRm8C1VzL' : 'GwGiygexslzpWR05lHIGqMBPPN0blbni',
         });
@@ -116,7 +115,6 @@ class Player extends Component {
             position: 0,
             muted: false,
         };
-        // this.soundCloudPlayer = null;
         this.changeTime = :: this.changeTime;
         this.playSong = :: this.playSong;
         this.sendPause = :: this.sendPause;
@@ -138,7 +136,6 @@ class Player extends Component {
     }
 
     setSong(source, song_id, position, timestamp) {
-        console.log(this.state);
         try {
             this.state.appleMusicPlayer.pause();
         } catch (err) {
@@ -154,9 +151,6 @@ class Player extends Component {
         case 'soundcloud':
             this.position = position;
             SC.stream(`/tracks/${song_id}`).then((player) => {
-                // TRIED WITHOUT STATES SAME PROBLEM
-                // this.soundCloudPlayer = player;
-                // this.playSong(position + (Date.now() - timestamp));
                 this.setState({
                     soundCloudPlayer: player,
                     position: position + (Date.now() - timestamp),
@@ -166,7 +160,6 @@ class Player extends Component {
             });
             break;
         case 'appleMusic':
-            console.log("applemusicsong");
             const appleMusic = MusicKit.getInstance();
             appleMusic.setQueue({ song: song_id }).then(() => {
                 this.setState({
@@ -192,19 +185,17 @@ class Player extends Component {
             this.state.soundCloudPlayer.on('seeked', () => this.state.soundCloudPlayer.setVolume(1));
             const elapsedTime = Date.now() - this.receivedTime;
             const playPosition = position + elapsedTime + 1000;
-            //TODO FIGURE THIS SHIT OUT FOR SYNCING
             setTimeout(() => this.state.soundCloudPlayer.seek(playPosition, 1000));
             break;
         }
         case 'spotify':
             break;
         case 'appleMusic':
-            console.log(this.state.appleMusicPlayer)
             this.state.appleMusicPlayer.play();
             const elapsedTime = Date.now() - this.receivedTime;
-            const playPosition = position + elapsedTime + 1000;
-            this.state.appleMusicPlayer.player.currentPlaybackProgress = playPosition + 1000;
-            console.log(this.state.appleMusicPlayer);
+            const playPosition = position + elapsedTime;
+            // this.state.appleMusicPlayer.player.seekToTime(5);
+            // this.state.appleMusicPlayer.player.currentPlaybackProgress = playPosition + 1000;
             break;
         default:
             break;

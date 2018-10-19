@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
 import { getStation, resetStation } from './stationActions';
-import Header from '../common/Header';
+import Header, { LogoContainer, NavItem } from '../common/Header';
+import Logo from '../common/Logo';
 import Loading from '../common/Loading';
 import Notifications from './Notifications';
 import Search from './Search';
@@ -68,9 +69,31 @@ class Station extends Component {
             queue = <Queue songs={this.props.station.songs} />;
         }
 
+        console.log(this.props.station);
+        const navbarTabsLeft = (
+            <div>
+                <LogoContainer href={'/'}>
+                    <Logo animate={false} />
+                </LogoContainer>
+                <ul>
+                    <NavItem>{this.props.station.name}</NavItem>
+                </ul>
+            </div>
+        );
+
+        const navbarTabsRight = (
+            <div>
+                <NavItem onClick={() => console.log('Edit todo')}>Edit</NavItem>
+                <NavItem onClick={() => console.log('Mix todo')}>Mix</NavItem>
+            </div>
+        );
+
         return (
             <div>
-                <Header admin logoAnimate station={this.props.stationName} stationHost={this.props.stationHost} resetStation={this.props.resetStation} />
+                <Header
+                  childrenLeft={navbarTabsLeft}
+                  childrenRight={navbarTabsRight}
+                />
                 <Search />
                 <HostHeader shown={true}>
                     <div>

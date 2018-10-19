@@ -5,12 +5,10 @@ import Logo from './Logo';
 import * as Colors from './Colors';
 
 
-const LogoContainer = styled.a`
+export const LogoContainer = styled.a`
     color: white;
     position: relative;
-    top: ${props => props.shown ? '0px' : '-15px'};
-    opacity: ${props => props.shown ? '1' : '0'};
-    visibility: ${props => props.shown ? 'visible' : 'collapse'};
+    top: 0;
     transition: .4s;
     float: left;
     svg {
@@ -20,10 +18,23 @@ const LogoContainer = styled.a`
     }
 `;
 
-const NavItem = styled.a`
+const NavBarLeft = styled.div`
+    float: left,
+    verticalAlign: bottom,
+    div {
+        float: left;
+    }
+`;
+
+const NavBarRight = styled.div`
+    float: right;
+    verticalAlign: bottom;
+`;
+
+export const NavItem = styled.a`
     color: white;
     float: left;
-    display: ${props => props.shown ? 'inline-block' : 'none'};
+    display: inline-block;
     color: white;
     padding: 18px;
     font-size: 18px;
@@ -40,20 +51,13 @@ const NavItem = styled.a`
 export default class Header extends Component {
 
     static propTypes = {
-        station: PropTypes.string,
-        dashboard: PropTypes.bool,
-        admin: PropTypes.bool,
-        logoAnimate: PropTypes.bool,
-        stationHost: PropTypes.string,
-        resetStation: PropTypes.func,
+        childrenLeft: PropTypes.Object,
+        childrenRight: PropTypes.Object,
     };
 
     static defaultProps = {
-        station: '',
-        stationHost: '',
-        dashboard: false,
-        admin: false,
-        logoAnimate: false,
+        childrenLeft: '',
+        childrenRight: '',
     }
 
     constructor(props) {
@@ -81,38 +85,23 @@ export default class Header extends Component {
                 top: '0',
                 backgroundColor: Colors.primaryC,
             },
-            navBarLeft: {
-                float: 'left',
-                verticalAlign: 'bottom',
-            },
-            navBarRight: {
-                float: 'right',
-            },
-            leftItems: {
-                float: 'left',
-                marginLeft: '10px',
-            },
         };
 
-        const { admin, station, dashboard, logoAnimate } = this.props;
+        const { admin } = this.props;
+        const { childrenLeft, childrenRight } = this.props;
+
         return (
             <div className="container" style={styles.navBar}>
                 <div className="content">
-                    <div style={styles.navBarLeft}>
-                        <LogoContainer shown href={dashboard ? '/' : '/dashboard'}>
-                            <Logo animate={logoAnimate} />
-                        </LogoContainer>
-                        <ul style={styles.leftItems}>
-                            <NavItem shown={station} onClick={this.handleReset}>{station}</NavItem>
-                        </ul>
-                    </div>
-                    <div style={styles.navBarRight}>
+                    <NavBarLeft>
+                        { childrenLeft }
+                    </NavBarLeft>
+                    <NavBarRight>
                         <ul>
                             <NavItem shown={admin} onClick={this.handleEdit}>Edit</NavItem>
                             <NavItem shown={admin} onClick={this.handleMix}>Mix</NavItem>
-                            <NavItem shown={dashboard} onClick={this.handleSignOut}>Sign Out</NavItem>
                         </ul>
-                    </div>
+                    </NavBarRight>
                 </div>
             </div>
         );

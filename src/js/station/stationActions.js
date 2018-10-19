@@ -32,7 +32,7 @@ jwt.sign({ iss: '2EXVDJ88N2' }, '-----BEGIN PRIVATE KEY-----\nMIGTAgEAMBMGByqGSM
     appleMusicToken = token;
 });
 
-document.addEventListener('musickitloaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     return fetch(`http://${BaseURI}/api/token`, {
         method: 'GET',
         mode: 'cors',

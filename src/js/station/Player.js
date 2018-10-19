@@ -191,10 +191,11 @@ class Player extends Component {
         case 'spotify':
             break;
         case 'appleMusic':
-            this.state.appleMusicPlayer.play();
+            this.state.appleMusicPlayer.play().then(() => {
+                this.state.appleMusicPlayer.player.seekToTime(50);
+            });
             const elapsedTime = Date.now() - this.receivedTime;
             const playPosition = position + elapsedTime;
-            // this.state.appleMusicPlayer.player.seekToTime(5);
             // this.state.appleMusicPlayer.player.currentPlaybackProgress = playPosition + 1000;
             break;
         default:
@@ -233,6 +234,7 @@ class Player extends Component {
     // ADMIN ONLY
     // Only admin websockets can receive
     sendPlay() {
+        //player.currentPlaybackTime
         if (this.props.song.song_id === '') {
             this.props.nextSong();
         } else {

@@ -4,7 +4,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
 import SearchItem from './SearchItem';
-import { searchAll, searchSoundcloud } from './stationActions';
+import { searchAll } from './stationActions';
+import { refreshSpotify } from '../dashboard/dashboardActions';
+
 import * as Colors from '../common/Colors';
 import LoadingSpin from '../common/LoadingSpin';
 
@@ -43,7 +45,7 @@ const SearchBox = styled.div`
     }
     ul {
         display: inline-block;
-        width: 50%;
+        width: ${props => props.resultsWidth};
         float: left;
         div {
             height: 25px;
@@ -58,7 +60,9 @@ const SearchBox = styled.div`
     #soundcloud-search-results-bar {
         background-color: ${Colors.soundcloudC}
     }
-
+    #spotify-search-results-bar {
+        background-color: ${Colors.spotifyC}
+    }
     #soundcloud-logo {
       margin-top: 6px;
       height: 14px;
@@ -70,10 +74,11 @@ class Search extends Component {
 
     static propTypes = {
         searchAll: PropTypes.func.isRequired,
-        searchSoundcloud: PropTypes.func.isRequired,
+        refreshSpotify: PropTypes.func.isRequired,
         searchValue: PropTypes.string.isRequired,
         loadingSoundcloud: PropTypes.bool.isRequired,
         loadingAppleMusic: PropTypes.bool.isRequired,
+        loadingSpotify: PropTypes.bool.isRequired,
         results: PropTypes.object,
     };
 
@@ -84,6 +89,14 @@ class Search extends Component {
     constructor(props) {
         super(props);
         // this.handleMouseMove = throttle(::this.handleMouseMove, 50, { trailing: true, leading: true });
+        let soundcloud = true;
+        let spotify = this.props.spotifyToken ? true : false;
+        let appleMusic = false;
+        this.state = {
+            soundcloud,
+            spotify,
+            appleMusic,
+        }
         this.handleChange = :: this.handleChange;
     }
 
@@ -92,15 +105,19 @@ class Search extends Component {
         // if (props.results.soundcloud.query !== this.state.searchValue) {
         //     this.props.searchSoundcloud(this.state.searchValue);
         // }
+        //
+        if (props.results.spotify.error.status === 401) {
+            props.refreshSpotify(props.username);
+            this.handleChange();
+        }
     }
 
     handleChange(query) {
-        this.props.searchAll(query);
+        this.props.searchAll(query, this.state.soundcloud, this.state.spotify, this.state.appleMusic, this.props.spotifyToken);
     }
 
     render() {
         let soundCloudKey = 0;
-
         const soundCloudSongs = this.props.loadingSoundcloud ?
             (<LoadingContainer>
                 <LoadingSpin />
@@ -134,6 +151,23 @@ class Search extends Component {
             );
         });
 
+        let spotifyKey = 0;
+        const spotifySongs = this.props.loadingSpotify ?
+            (<LoadingContainer>
+                <LoadingSpin />
+            </LoadingContainer>) :
+            this.props.results.spotify.songs.map((song) => {
+            spotifyKey += 1;
+            return (
+                <SearchItem
+                  key={spotifyKey}
+                  song={song}
+                  source="spotify"
+                  postAdd={() => this.handleChange('')}
+                />
+            );
+        });
+
         const styles = {
             searchContainer: {
                 zIndex: 11,
@@ -158,8 +192,12 @@ class Search extends Component {
                 boxShadow: '12px 12px 64px -12px rgba(0,0,0,0.75)',
             },
         };
+        let numResults = 0;
+        numResults += this.state.spotify;
+        numResults += this.state.soundcloud;
+        numResults += this.state.appleMusic; 
         return (
-            <SearchBox className="container">
+            <SearchBox className="container" resultsWidth={`${1/numResults * 100}%`}>
                 <div className="content">
                     <input
                       type="text"
@@ -170,14 +208,24 @@ class Search extends Component {
                 </div>
                 <div className="container" style={styles.searchContainer}>
                     <div className="content" style={{ ...styles.searchContent, ...styles.shadow }}>
-                        <ul id="appleMusic-search-results">
-                            <div id="appleMusic-search-results-bar">apple music</div>
-                            {appleMusicSongs}
-                        </ul>
-                        <ul id="soundcloud-search-results">
-                            <div id="soundcloud-search-results-bar">soundcloud</div>
-                            {soundCloudSongs}
-                        </ul>
+                        { this.state.appleMusic &&
+                            <ul id="appleMusic-search-results">
+                                <div id="appleMusic-search-results-bar">apple music</div>
+                                {appleMusicSongs}
+                            </ul>
+                        }
+                        { this.state.soundcloud &&
+                            <ul id="soundcloud-search-results">
+                                <div id="soundcloud-search-results-bar">soundcloud</div>
+                                {soundCloudSongs}
+                            </ul>
+                        }
+                        { this.state.spotify &&
+                            <ul id="spotify-search-results">
+                                <div id="spotify-search-results-bar">spotify</div>
+                                {spotifySongs}
+                            </ul>
+                        }
                     </div>
                 </div>
             </SearchBox>
@@ -190,12 +238,20 @@ class Search extends Component {
  * Maps parts of the global redux store (the state) to props.
  */
 function mapStateToProps(state) {
+    let item = null;
+    if (state.login.user) {
+        item = state.login.user.accounts.find(account => account.source === 'spotify');
+    }
     return {
         results: state.station.search,
         searchValue: state.station.search.value,
         loadingSoundcloud: state.station.search.soundcloud.loading,
         loadingAppleMusic: state.station.search.appleMusic.loading,
+        loadingSpotify: state.station.search.spotify.loading,
+        spotifyToken: item ? item.access_token : null,
+        username: state.login.user ? state.login.user.username : null,
     };
+
 }
 /**
  * Maps actions and action creators to props. Never directly use
@@ -204,7 +260,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
         searchAll,
-        searchSoundcloud,
+        refreshSpotify,
     }, dispatch);
 }
 

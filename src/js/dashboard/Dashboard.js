@@ -2,13 +2,17 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { browserHistory } from 'react-router';
+
 import styled from 'styled-components';
 
 import Logo from '../common/Logo';
 import Header, { LogoContainer, NavItem } from '../common/Header';
 import Popup from '../common/Popup';
 import StationsList from './StationsList';
-import { createStation } from './dashboardActions';
+import AccountsList from './AccountsList';
+import { createStation, addCode, refreshSpotify, removeAccount } from './dashboardActions';
+import { logout } from '../login/loginActions';
 
 const Headshot = styled.img`
     border-radius: 72px;
@@ -44,6 +48,8 @@ class Dashboard extends Component {
     static propTypes = {
         user: PropTypes.object.isRequired,
         createStation: PropTypes.func.isRequired,
+        refreshSpotify: PropTypes.func.isRequired,
+        addCode: PropTypes.func.isRequired,
     }
 
 
@@ -52,10 +58,23 @@ class Dashboard extends Component {
         this.state = {
             create: false,
             display: dashboard_states.stations,
+            accounts: [],
         };
         this.handleClose = :: this.handleClose;
         this.showCreate = :: this.showCreate;
         this.createStation = :: this.createStation;
+        this.refreshSpotify = :: this.refreshSpotify;
+        this.removeAccount = :: this.removeAccount;
+    }
+
+    componentDidMount() {
+        if (this.props.location.query.code && !this.props.user.accounts.find(account => account.source === 'spotify')) {
+            this.props.addCode(this.props.user.username, 'spotify', this.props.location.query.code);
+            this.setState({
+                ...this.state,
+                display: dashboard_states.accounts,
+            });
+        }
     }
 
     handleClose() {
@@ -70,41 +89,32 @@ class Dashboard extends Component {
         });
     }
 
+    changeDisplay(display) {
+        this.setState({
+            display,
+        });
+    }
+
     createStation(stationName) {
         //check for /*%4kjfoek
         this.props.createStation(this.props.user.username, stationName);
     }
 
-    // goToStation(stationRoute) {
-    //     browserHistory.push(stationRoute);
-    // }
+    refreshSpotify() {
+        this.props.refreshSpotify(this.props.user.username);
+    }
 
-    // mapStations(stations) {
-    //     let key = 0;
-    //     return stations.map((station) => {
-    //         key += 1;
-    //         console.log(station.songs[0])
-    //         return (
-    //             <div
-    //               role="presentation"
-    //               onClick={() => this.goToStation(`/${this.props.user.username}/${station.name}`)}
-    //               key={key}
-    //             >
-    //                 <StationSmall
-    //                   name={station.name}
-    //                   username={this.props.user.username}
-    //                   albumCover={station.songs.length > 0 ? station.songs[0].album_url : ''}
-    //                   numSongs={station.songs ? station.songs.length : 0}
-    //                   numAdmins={stations.admins ? station.admins.length : 0}
-    //                 />
-    //             </div>
-    //         );
-    //     });
-    // }
+    removeAccount(source) {
+        this.props.removeAccount(this.props.user.username, source);
+    }
+
+    signOut() {
+        this.props.logout();
+        browserHistory.push("/");
+    }
 
     render() {
         const { user } = this.props;
-
         // const stations = user.stations == null ? '' : this.mapStations(user.stations);
         let display;
         switch (this.state.display) {
@@ -112,7 +122,7 @@ class Dashboard extends Component {
             display = <StationsList username={user.username} stations={user.stations} showCreate={this.showCreate} />;
             break;
         case dashboard_states.accounts:
-            // display = <AccountsList accounts={user.accounts} />;
+            display = <AccountsList refreshSpotify={this.refreshSpotify} removeAccount={this.removeAccount} accounts={user.accounts} />;
             break;
         default:
             break;
@@ -122,19 +132,21 @@ class Dashboard extends Component {
             <HeadshotFiller className="fa fa-user fa-5x" /> :
             <Headshot alt="profile" src={user.image_url} />;
 
+
         const navbarTabsLeft = (
             <div>
                 <LogoContainer href={'/'}>
                     <Logo animate={false} />
                 </LogoContainer>
                 <ul>
-                    <NavItem> Accounts </NavItem>
+                    <NavItem onClick={() => this.changeDisplay(dashboard_states.accounts)}>Accounts</NavItem>
+                    <NavItem onClick={() => this.changeDisplay(dashboard_states.stations)}>Stations</NavItem>
                 </ul>
             </div>
         );
 
         const navbarTabsRight = (
-            <NavItem onClick={() => console.log('sign out FIXME')}>Sign Out</NavItem>
+            <NavItem onClick={() => this.signOut()}>Sign Out</NavItem>
         );
 
         return (
@@ -178,6 +190,10 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
         createStation,
+        addCode,
+        refreshSpotify,
+        logout,
+        removeAccount,
     }, dispatch);
 }
 

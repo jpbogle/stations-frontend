@@ -1,5 +1,6 @@
 import { createStore, compose, applyMiddleware } from 'redux';
 import { syncHistoryWithStore, routerMiddleware } from 'react-router-redux';
+// import { composeWithDevTools } from 'redux-devtools-extension';
 import { browserHistory } from 'react-router';
 
 import thunk from 'redux-thunk';

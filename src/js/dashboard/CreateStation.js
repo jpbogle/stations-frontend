@@ -8,7 +8,7 @@ const StyledStation = styled.div`
     border-top: 1px solid #ddd;
     cursor: pointer;
     transition: .2s;
-    padding: 2px 12px;
+    padding: 5px 12px;
     img, i {
         width: 80px;
         height: 80px;
@@ -30,7 +30,7 @@ const StyledStation = styled.div`
     }
     div {
         float: left;
-        padding-left: 6px;
+        padding-left: 15px;
 
         span {
             font-size: 24px;

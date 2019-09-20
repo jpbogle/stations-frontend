@@ -26,13 +26,17 @@
         <meta name="viewport" content="width=device-width" />
 
         <script src="https://js-cdn.music.apple.com/musickit/v1/musickit.js"></script>
-
+        <script src="https://sdk.scdn.co/spotify-player.js"></script>
+        <script>
+        window.onSpotifyWebPlaybackSDKReady = () => {
+            window.Spotify = Spotify;
+        };
+        </script>
         <!-- REMOVE TO KEEP CACHE -->
         <meta http-equiv="cache-control" content="no-cache">
         <meta http-equiv="pragma" content="no-cache">
         <meta http-equiv="expires" content="0">
         <!-- REMOVE TO KEEP CACHE -->
-
     </head>
     <body>
         <section id="content"></section>

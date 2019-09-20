@@ -24,7 +24,7 @@ export default class StationsList extends Component {
                     <StationSmall
                       name={station.name}
                       username={this.props.username}
-                      albumCover={station.songs.length > 0 ? station.songs[0].album_url : ''}
+                      albumCover={station.playing.song.source === '' ? '' : station.playing.song.album_url}
                       numSongs={station.songs ? station.songs.length : 0}
                       numAdmins={stations.admins ? station.admins.length : 0}
                     />

@@ -36,7 +36,7 @@ export function showHome() {
     };
 }
 
-function setUser(user) {
+export function setUser(user) {
     return {
         type: SET_USER,
         payload: {
@@ -107,8 +107,6 @@ export function login(user) {
         })
         .then((res) => {
             return res.json().then((json) => {
-                console.log(res);
-                console.log(res.headers.get('set-cookie'));
                 if (res.ok) {
                     setTimeout(() => {
                         dispatch(setUser(json.user));
@@ -128,6 +126,34 @@ export function login(user) {
         })
         .catch((err) => {
             setTimeout(() => dispatch(loginError({ status: 500, type: 'Internal server error', message: err })), 1000);
+        });
+    };
+}
+
+export function logout(user) {
+    return (dispatch) => {
+        return fetch(`http://${BaseURI}/api/users/logout`, {
+            method: 'DELETE',
+            mode: 'cors',
+            credentials: 'include',
+        })
+        .then((res) => {
+            return res.json().then((json) => {
+                if (res.ok) {
+                    dispatch(setUser(null));
+                    browserHistory.push('/');
+                } else {
+                    const error = {
+                        status: res.status,
+                        type: json.error_type,
+                        message: json.error_message,
+                    };
+                    dispatch(loginError(error));
+                }
+            });
+        })
+        .catch((err) => {
+            dispatch(loginError({ status: 500, type: 'Internal server error', message: err }));
         });
     };
 }

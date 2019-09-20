@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import LogoGray from '../common/LogoGray';
 import * as Colors from '../common/Colors';
 
 const StyledStation = styled.div`
@@ -8,8 +9,8 @@ const StyledStation = styled.div`
     border-top: 1px solid #ddd;
     cursor: pointer;
     transition: .2s;
-    padding: 2px 12px;
-    img {
+    padding: 5px 12px;
+    img, svg {
         width: 80px;
         height: 80px;
         border-radius: 40px;
@@ -30,7 +31,7 @@ const StyledStation = styled.div`
 
     div {
         float: left;
-        padding-left: 6px;
+        padding-left: 15px;
 
         span {
             font-size: 24px;
@@ -66,10 +67,13 @@ export default class StationSmall extends Component {
 
     render() {
         const { name, albumCover, numSongs, numAdmins } = this.props;
-
         return (
             <StyledStation class="station" data-station={name}>
-                <img alt="station" src={albumCover} />
+                {albumCover ? (
+                    <img alt="station" src={albumCover} />
+                ) : (
+                    <LogoGray />
+                )}
                 <div>
                     <span>{name}</span>
                     <p>{numSongs} songs</p>

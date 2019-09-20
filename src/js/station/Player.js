@@ -4,8 +4,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
 import SC from 'soundcloud';
-import { nextSong, sendPlayer } from './stationActions';
+import { nextSong, sendPlayer, changeDevice } from './stationActions';
+import { refreshSpotify } from '../dashboard/dashboardActions';
+
 import SoundcloudLogo from '../common/SoundcloudLogo';
+import { rejects } from 'assert';
 
 const AlbumOuter = styled.div`
     width: 112px;
@@ -78,10 +81,11 @@ class Player extends Component {
 
     static propTypes = {
         song: PropTypes.shape({
+            id: PropTypes.number,
             title: PropTypes.string,
             artist: PropTypes.string,
             source: PropTypes.string,
-            song_id: PropTypes.string,
+            source_id: PropTypes.string,
             album_url: PropTypes.string,
             votes: PropTypes.number,
             duration: PropTypes.int,
@@ -103,17 +107,18 @@ class Player extends Component {
         playing: false,
     }
 
+
+
     constructor(props) {
         super(props);
-        const dev = true;
-        SC.initialize({
-            client_id: dev ? 'oG45iJyWRj8McdpinDKk4QSgRm8C1VzL' : 'GwGiygexslzpWR05lHIGqMBPPN0blbni',
-        });
+        this.timer = null;
         this.state = {
             appleMusicPlayer: null,
             soundCloudPlayer: null,
+            spotifyPlayer: null,
             position: 0,
             muted: false,
+            loading: true,
         };
         this.changeTime = :: this.changeTime;
         this.playSong = :: this.playSong;
@@ -123,19 +128,106 @@ class Player extends Component {
         this.unmute = :: this.unmute;
     }
 
+    initializeSoundcloud() {
+        const dev = true;
+        SC.initialize({
+            client_id: dev ? 'oG45iJyWRj8McdpinDKk4QSgRm8C1VzL' : 'GwGiygexslzpWR05lHIGqMBPPN0blbni',
+        });
+    }
+
+    initializeSpotify() {
+        return new Promise((resolve, reject) => {
+            const userAccessToken = this.props.spotifyAccess;
+            if (window.Spotify && this.props.spotifyAccess) {
+                const spotifyPlayer = new window.Spotify.Player({
+                    name: 'Spotify Web Playback SDK',
+                    getOAuthToken: callback => callback(userAccessToken),
+                });
+                spotifyPlayer.addListener('player_state_changed', s => { console.log(s); });
+                spotifyPlayer.connect().then((res) => {
+                    spotifyPlayer.on('ready', data => {
+                        const spotifyDevice = data.device_id;
+                        changeDevice(data.device_id, userAccessToken)
+                        .then((res => {
+                            this.setState({
+                                ...this.state,
+                                spotifyDevice,
+                                spotifyPlayer,
+                                loading: false,
+                            }, () => {
+                                // this.pauseSong("spotify");
+                                resolve();
+                            });
+                        }))
+                    });
+                    spotifyPlayer.on('authentication_error', data => {
+                        console.log("AUTH ERR")
+                        this.props.refreshSpotify(this.props.user.username)
+                        this.initializeSpotify();
+                    })
+                })
+                .catch(err =>{
+
+                })
+            } else {
+                reject();
+            }
+        })
+    }
+
+    initializeAppleMusic() {
+        let appleMusic = MusicKit.getInstance();
+        appleMusic.authorize().then((token) => {
+            appleMusic.api.search("e",  { limit: 15, types: 'artists,songs' })
+            .then((res) => {
+                console.log(res);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        });
+    }
+
+    componentDidMount() {
+        this.initializeSoundcloud();
+        // this.initializeAppleMusic();
+        this.initializeSpotify().then(() => {
+            const position = this.props.playing ? (this.props.position + (Date.now() - this.props.timestamp)) : this.props.position;
+            this.setSong(position, this.props.song.source, this.props.song.source_id).then(() => {
+                if (this.props.playing) {
+                    this.playSong(position, this.props.song.source, this.props.song.source_id);
+                } else {
+                    this.pauseSong(this.props.song.source);
+                }
+            })
+        }).catch(error => {
+            console.log("TODO: spotify error...");
+        });
+    }
+
     componentWillReceiveProps(props) {
-        this.receivedTime = Date.now();
-        if (props.song.song_id !== this.props.song.song_id) {
-            this.setSong(props.song.source, props.song.song_id, props.position, props.timestamp);
-        } else if (props.playing) {
+        if (!this.state.loading) {
             const position = props.position + (Date.now() - props.timestamp);
-            this.playSong(position);
-        } else {
-            this.pauseSong();
+            if (props.song.source_id !== this.props.song.source_id && props.song.source_id != "") {
+                this.setSong(position, props.song.source, props.song.source_id).then(() => {
+                    if (props.playing) {
+                        this.playSong(position, props.song.source, props.song.source_id);
+                    } else {
+                        this.pauseSong(props.song.source);  
+                    }
+                })
+            } 
+            else if (props.playing !== this.props.playing) {
+                if (props.playing) {
+                    this.playSong(position, props.song.source, props.song.source_id);
+                } else {
+                    this.pauseSong(props.song.source);
+                }
+            }
         }
     }
 
-    setSong(source, song_id, position, timestamp) {
+   setSong(position, source, source_id) {
         try {
             this.state.appleMusicPlayer.pause();
         } catch (err) {
@@ -146,56 +238,92 @@ class Player extends Component {
         } catch (err) {
 
         }
+        try {
+            fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${this.state.spotifyDevice}`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `Bearer ${this.props.spotifyAccess}`,
+                },
+            }).then(res => {
 
-        switch (source) {
-        case 'soundcloud':
-            this.position = position;
-            SC.stream(`/tracks/${song_id}`).then((player) => {
-                this.setState({
-                    soundCloudPlayer: player,
-                    position: position + (Date.now() - timestamp),
-                }, () => {
-                    this.playSong(this.state.position);
-                });
             });
-            break;
-        case 'appleMusic':
-            const appleMusic = MusicKit.getInstance();
-            appleMusic.setQueue({ song: song_id }).then(() => {
-                this.setState({
-                    appleMusicPlayer: appleMusic,
-                    position: position + (Date.now() - timestamp),
-                }, () => {
-                    this.playSong(this.state.position);
-                });
-            });
-            break;
-        default:
-            break;
+        } catch (err) {
+
+
         }
+
+        return new Promise(resolve => {
+            switch (source) {
+            case 'soundcloud':
+                this.position = position;
+                SC.stream(`/tracks/${source_id}`).then((player) => {
+                    this.setState({
+                        soundCloudPlayer: player,
+                        position: position,
+                    }, () => {
+                        resolve();
+                    });
+                });
+                break;
+            case 'appleMusic':
+                const appleMusic = MusicKit.getInstance();
+                appleMusic.setQueue({ song: source_id }).then(() => {
+                    this.setState({
+                        appleMusicPlayer: appleMusic,
+                        position: position,
+                    }, () => {
+                        resolve();
+                    });
+                });
+                break;
+            case 'spotify':
+                this.setState({
+                    position: position,
+                }, () => {
+                    resolve();
+                });
+                break;
+            default:
+                break;
+            }
+        })
+
     }
 
-    playSong(position) {
+    playSong(position, source, source_id) {
         clearInterval(this.timer);
         this.timer = setInterval(() => this.changeTime(), 100);
-        switch (this.props.song.source) {
+        // const elapsedTime = Date.now() - this.state.receivedTime;
+        // const playPosition = position + elapsedTime + 1000;
+        switch (source) {
         case 'soundcloud': {
+            console.log(this.state);
             this.state.soundCloudPlayer.play();
             this.state.soundCloudPlayer.setVolume(0);
             this.state.soundCloudPlayer.on('seeked', () => this.state.soundCloudPlayer.setVolume(1));
-            const elapsedTime = Date.now() - this.receivedTime;
-            const playPosition = position + elapsedTime + 1000;
-            setTimeout(() => this.state.soundCloudPlayer.seek(playPosition, 1000));
+            setTimeout(() => this.state.soundCloudPlayer.seek(position + 1000, 1000));
             break;
         }
         case 'spotify':
+            fetch(`https://api.spotify.com/v1/me/player/play?device_id=${this.state.spotifyDevice}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    uris: [`spotify:track:${source_id}`],
+                    position_ms: position,
+                }),
+                headers: {
+                    Authorization: `Bearer ${this.props.spotifyAccess}`,
+                },
+            }).then(res => {
+
+            }).catch(err => {
+                // refresh token and try again    
+            });
             break;
         case 'appleMusic':
             this.state.appleMusicPlayer.play().then(() => {
                 this.state.appleMusicPlayer.player.seekToTime(50);
             });
-            const elapsedTime = Date.now() - this.receivedTime;
-            const playPosition = position + elapsedTime;
             // this.state.appleMusicPlayer.player.currentPlaybackProgress = playPosition + 1000;
             break;
         default:
@@ -203,16 +331,51 @@ class Player extends Component {
         }
     }
 
-    pauseSong() {
+    pauseAll(source) {
         clearInterval(this.timer);
-        switch (this.props.song.source) {
+        try {
+            this.state.soundCloudPlayer.pause();
+        } catch (err) {
+
+        }
+        try {
+            fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${this.state.spotifyDevice}`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `Bearer ${this.props.spotifyAccess}`,
+                },
+            }).then(res => {
+
+            });
+        } catch (err) {
+
+        }
+        try {
+            this.state.appleMusicPlayer.pause();
+        } catch (err) {
+
+        }
+    }
+
+    pauseSong(source) {
+        switch (source) {
         case 'soundcloud':
             this.state.soundCloudPlayer.pause();
+            clearInterval(this.timer);
             break;
         case 'spotify':
+            fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${this.state.spotifyDevice}`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `Bearer ${this.props.spotifyAccess}`,
+                },
+            }).then(res => {
+                clearInterval(this.timer);
+            });
             break;
         case 'appleMusic':
             this.state.appleMusicPlayer.pause();
+            clearInterval(this.timer);
             break;
         default:
             break;
@@ -235,7 +398,7 @@ class Player extends Component {
     // Only admin websockets can receive
     sendPlay() {
         //player.currentPlaybackTime
-        if (this.props.song.song_id === '') {
+        if (this.props.song.source_id === '') {
             this.props.nextSong();
         } else {
             sendPlayer({
@@ -406,13 +569,19 @@ class Player extends Component {
  * Maps parts of the global redux store (the state) to props.
  */
 function mapStateToProps(state) {
+    let item = null;
+    if (state.login.user) {
+        item = state.login.user.accounts.find(account => account.source === 'spotify');
+    }
     return {
-        song: state.station.player.song,
-        playing: state.station.player.playing,
-        position: state.station.player.position,
-        timestamp: state.station.player.timestamp,
+        song: state.station.station.playing.song,
+        playing: state.station.station.playing.playing,
+        position: state.station.station.playing.position,
+        timestamp: state.station.station.playing.timestamp,
         admin: state.station.admin,
         ws: state.station.ws,
+        spotifyAccess: item ? item.access_token : null,
+        user: state.login.user ? state.login.user : null,
     };
 }
 /**
@@ -422,6 +591,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
         nextSong,
+        refreshSpotify,
     }, dispatch);
 }
 

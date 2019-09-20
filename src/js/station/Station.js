@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
-import { getStation, resetStation } from './stationActions';
+import { getStation, resetStation, shuffleStation } from './stationActions';
 import Header, { LogoContainer, NavItem } from '../common/Header';
 import Logo from '../common/Logo';
 import Loading from '../common/Loading';
@@ -54,10 +54,15 @@ class Station extends Component {
         getStation: PropTypes.func.isRequired,
         resetStation: PropTypes.func.isRequired,
         station: PropTypes.object.isRequired,
+        username: PropTypes.string,
     }
 
     componentWillMount() {
-        this.props.getStation(this.props.stationHost);
+        this.props.getStation(this.props.stationHost, this.props.username);
+    }
+
+    handleMix() {
+        this.props.shuffleStation();
     }
 
     render() {
@@ -69,10 +74,9 @@ class Station extends Component {
             queue = <Queue songs={this.props.station.songs} />;
         }
 
-        console.log(this.props.station);
         const navbarTabsLeft = (
             <div>
-                <LogoContainer href={'/'}>
+                <LogoContainer href={'/dashboard'}>
                     <Logo animate={false} />
                 </LogoContainer>
                 <ul>
@@ -84,7 +88,7 @@ class Station extends Component {
         const navbarTabsRight = (
             <div>
                 <NavItem onClick={() => console.log('Edit todo')}>Edit</NavItem>
-                <NavItem onClick={() => console.log('Mix todo')}>Mix</NavItem>
+                <NavItem onClick={() => this.handleMix()}>Mix</NavItem>
             </div>
         );
 
@@ -118,6 +122,7 @@ function mapStateToProps(state) {
         stationName: state.routing.locationBeforeTransitions.pathname.split('/').pop(),
         loading: state.station.loading,
         station: state.station.station,
+        username: state.login.user ? state.login.user.username : "",
     };
 }
 /**
@@ -128,6 +133,7 @@ function mapDispatchToProps(dispatch) {
     return bindActionCreators({
         getStation,
         resetStation,
+        shuffleStation,
     }, dispatch);
 }
 

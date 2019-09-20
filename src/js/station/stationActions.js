@@ -12,6 +12,7 @@ export const UPDATE_PLAYER = 'UPDATE_PLAYER';
 export const SET_SEARCH_VALUE = 'SET_SEARCH_VALUE';
 export const SET_SOUNDCLOUD_SONGS = 'SET_SOUNDCLOUD_SONGS';
 export const SET_APPLE_MUSIC_SONGS = 'SET_APPLE_MUSIC_SONGS';
+export const SET_SPOTIFY_SONGS = 'SET_SPOTIFY_SONGS';
 export const STATION_ERROR = 'STATION_ERROR';
 export const SPOTIFY_ERROR = 'SPOTIFY_ERROR';
 export const SOUNDCLOUD_ERROR = 'SOUNDCLOUD_ERROR';
@@ -58,6 +59,7 @@ const dev = true;
 SC.initialize({
     client_id: dev ? 'oG45iJyWRj8McdpinDKk4QSgRm8C1VzL' : 'GwGiygexslzpWR05lHIGqMBPPN0blbni',
 });
+
 
 
 let ws;
@@ -128,6 +130,16 @@ function setSoundCloudSongs(songs, query) {
 function setAppleMusicSongs(songs, query) {
     return {
         type: SET_APPLE_MUSIC_SONGS,
+        payload: {
+            songs,
+            query,
+        },
+    };
+}
+
+function setSpotifySongs(songs, query) {
+    return {
+        type: SET_SPOTIFY_SONGS,
         payload: {
             songs,
             query,
@@ -213,26 +225,26 @@ export function sendPlayer(currentSong) {
     );
 }
 
-function openSocket(stationRoute, dispatch) {
-    ws = new WebSocket(`ws://${BaseURI}/api${stationRoute}/ws`);
+function openSocket(stationRoute, username, dispatch) {
+    ws = new WebSocket(`ws://${BaseURI}/api${stationRoute}/ws/${username}`);
     window.onbeforeunload = () => {
         ws.close();
     };
     dispatch(setWebsocket(ws));
-
     ws.onmessage = (event) => {
-        console.log(JSON.parse(event.data));
         const data = JSON.parse(event.data);
+        console.log(data);
         if (data.station) {
             dispatch(setStation(data.station));
             dispatch(notification(data.header, data.message));
+            // dispatch(updatePlayer(data.station.playing));
         }
-        if (data.header === "Next Song") {
-            dispatch(updatePlayer(data.station.playing));
-        }
-        if (data.player) {
-            dispatch(updatePlayer(data.player));
-        }
+        // if (data.header === "Next Song") {
+            // dispatch(updatePlayer(data.station.playing));
+        // }
+        // if (data.player) {
+        //     dispatch(updatePlayer(data.player));
+        // }
         dispatch(setAdmin(data.admin));
     };
 }
@@ -270,6 +282,35 @@ export function resetStation(username, stationName) {
 //
 //////////////////////////////////////////////////////////////////////////////
 
+
+export function shuffleStation() {
+    const stationRoute = browserHistory.getCurrentLocation().pathname;
+    return (dispatch) => {
+        dispatch(loadingStation());
+        return fetch(`http://${BaseURI}/api${stationRoute}/shuffle`, {
+            method: 'GET',
+            mode: 'cors',
+        })
+        .then((res) => {
+            return res.json().then((json) => {
+                if (res.ok) {
+                    // console.log(json);
+                    // dispatch(setStation(json.station));
+                } else {
+                    const error = {
+                        status: res.status,
+                        type: json.error_type,
+                        message: json.error_message,
+                    };
+                    dispatch(stationError(error));
+                }
+            });
+        })
+        .catch((err) => {
+            setTimeout(() => dispatch(stationError({ status: 500, type: 'Internal server error', message: err })), 1000);
+        });
+    };
+}
 
 export function nextSong() {
     const stationRoute = browserHistory.getCurrentLocation().pathname;
@@ -361,32 +402,24 @@ export function sendVote(voteRequest) {
 }
 
 
-export function getStation(stationRoute) {
+export function getStation(stationRoute, username) {
     return (dispatch) => {
-        openSocket(stationRoute, dispatch);
-        // dispatch(loadingStation());
-        // return fetch(`http://${BaseURI}/api${stationRoute}`, {
-        //     method: 'GET',
-        //     mode: 'cors',
-        // })
-        // .then((res) => {
-        //     return res.json().then((json) => {
-        //         if (res.ok) {
-        //             dispatch(setStation(json.station));
-        //         } else {
-        //             const error = {
-        //                 status: res.status,
-        //                 type: json.error_type,
-        //                 message: json.error_message,
-        //             };
-        //             dispatch(stationError(error));
-        //         }
-        //     });
-        // })
-        // .catch((err) => {
-        //     setTimeout(() => dispatch(stationError({ status: 500, type: 'Internal server error', message: err })), 1000);
-        // });
+        openSocket(stationRoute, username, dispatch);
     };
+}
+
+export function changeDevice(deviceId, token) {
+    return fetch('https://api.spotify.com/v1/me/player', {
+        method: 'PUT',
+        headers: {
+            authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            device_ids: [deviceId],
+            play: false,
+        }),
+    });
 }
 
 
@@ -397,29 +430,38 @@ export function getStation(stationRoute) {
 //////////////////////////////////////////////////////////////////////////////
 
 
-export function searchSpotify(query) {
+export function searchSpotify(query, spotifyToken) {
     return (dispatch) => {
-        return fetch('https://api.spotify.com/v1/search', {
-            method: 'POST',
-            body: JSON.stringify({
-                q: query,
-                type: 'track,artist',
-            }),
-            // mode: 'cors',
+        return fetch(`https://api.spotify.com/v1/search?q=${query}&type=track&limit=15`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${spotifyToken}`,
+            },
         })
         .then((res) => {
             return res.json().then((json) => {
-                console.log(res);
-                if (res.ok) {
-                    dispatch(setSpotifySongs(json));
-                } else {
-                    const error = {
-                        status: res.status,
-                        type: json.error_type,
-                        message: json.error_message,
-                    };
-                    dispatch(spotifyError(error));
+                console.log(json);
+                if (res.status === 200) {
+                    if (!json.tracks.items) {
+                        return dispatch(setSpotifySongs([], ''));
+                    }
+                    const songs = json.tracks.items.map((song) => {
+                        return {
+                            song_id: `${song.id}`,
+                            title: song.name,
+                            artist: song.artists[0].name,
+                            album_url: song.album.images[0].url,
+                            duration: song.duration_ms,
+                        };
+                    });
+                    return dispatch(setSpotifySongs(songs, query));
                 }
+                const error = {
+                    status: json.error.status,
+                    type: json.error.status,
+                    message: json.error.message,
+                };
+                return dispatch(spotifyError(error));
             });
         })
         .catch((err) => {
@@ -464,16 +506,18 @@ export function searchSoundcloud(query) {
 }
 
 export function searchAppleMusic(query) {
+    let music = MusicKit.getInstance();
     const term = query.replace(/ /g, '+');
     console.log(appleMusicToken);
     return (dispatch) => {
-        return fetch(`https://api.music.apple.com/v1/catalog/us/search?term=${term}?&types=artists,songs&limit=15`, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${appleMusicToken}`,
-            },
-            mode: 'cors',
-        })
+        // return fetch(`https://api.music.apple.com/v1/catalog/us/search?term=${term}?&types=artists,songs&limit=15`, {
+        //     method: 'GET',
+        //     headers: {
+        //         Authorization: `Bearer ${appleMusicToken}`,
+        //     },
+        //     mode: 'cors',
+        // })
+        music.api.search(term, {types: "artists,songs", limit: 15})
         .then((res) => {
             return res.json().then((json) => {
                 if (res.ok) {
@@ -507,7 +551,7 @@ export function searchAppleMusic(query) {
     };
 }
 
-export function searchAll(query) {
+export function searchAll(query, soundcloud, spotify, applemusic, spotifyToken) {
     return (dispatch) => {
         dispatch(setSearchValue(query));
         if (query === '') {
@@ -515,8 +559,14 @@ export function searchAll(query) {
         }
         // TODO have search to wait for all to load to display at once?
         dispatch(loadingSearch());
-        dispatch(searchSoundcloud(query));
-        // dispatch(searchSpotify(query));
-        dispatch(searchAppleMusic(query));
+        if (soundcloud) {
+            dispatch(searchSoundcloud(query));
+        }
+        if (spotify) {
+            dispatch(searchSpotify(query, spotifyToken));
+        }
+        if (applemusic) {
+            dispatch(searchAppleMusic(query));
+        }
     };
 }

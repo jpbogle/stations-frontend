@@ -106,7 +106,7 @@ class SearchItem extends Component {
             songInfo: {
                 paddingLeft: '6px',
                 textAlign: 'left',
-                width: 'calc(100% - 240px)',
+                width: 'calc(100% - 86px)',
             },
             songName: {
                 fontSize: '24px',

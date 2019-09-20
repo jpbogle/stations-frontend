@@ -50,11 +50,6 @@ export const NavItem = styled.a`
 
 export default class Header extends Component {
 
-    static propTypes = {
-        childrenLeft: PropTypes.Object,
-        childrenRight: PropTypes.Object,
-    };
-
     static defaultProps = {
         childrenLeft: '',
         childrenRight: '',
@@ -62,20 +57,20 @@ export default class Header extends Component {
 
     constructor(props) {
         super(props);
-        this.handleReset = :: this.handleReset;
+        // this.handleReset = :: this.handleReset;
     }
 
     handleEdit() {
 
     }
 
-    handleMix() {
+    // handleMix() {
+    //     this.props.handleMix();
+    // }
 
-    }
-
-    handleReset() {
-        this.props.resetStation(this.props.stationHost, this.props.station);
-    }
+    // handleReset() {
+    //     this.props.resetStation(this.props.stationHost, this.props.station);
+    // }
 
     render() {
         const styles = {
@@ -97,10 +92,11 @@ export default class Header extends Component {
                         { childrenLeft }
                     </NavBarLeft>
                     <NavBarRight>
-                        <ul>
+                        { childrenRight }
+                        {/* <ul>
                             <NavItem shown={admin} onClick={this.handleEdit}>Edit</NavItem>
                             <NavItem shown={admin} onClick={this.handleMix}>Mix</NavItem>
-                        </ul>
+                        </ul> */}
                     </NavBarRight>
                 </div>
             </div>

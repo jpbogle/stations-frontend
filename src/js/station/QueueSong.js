@@ -131,7 +131,8 @@ class QueueSong extends Component {
             album_cover: PropTypes.string,
             votes: PropTypes.number,
             source: PropTypes.string,
-            song_id: PropTypes.string,
+            source_id: PropTypes.string,
+            id: PropTypes.number,
         }).isRequired,
         stationHost: PropTypes.string.isRequired,
         sendVote: PropTypes.func.isRequired,
@@ -155,7 +156,7 @@ class QueueSong extends Component {
         });
         this.props.sendVote({
             source: this.props.song.source,
-            source_id: this.props.song.song_id,
+            source_id: this.props.song.source_id,
             action: 'upvote',
         });
     }
@@ -168,7 +169,7 @@ class QueueSong extends Component {
 
         this.props.sendVote({
             source: this.props.song.source,
-            source_id: this.props.song.song_id,
+            source_id: this.props.song.source_id,
             action: 'downvote',
         });
     }

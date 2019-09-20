@@ -24,7 +24,7 @@ class Notifications extends Component {
 
     render() {
         const notifications = this.props.notifications;
-        const ret = Object.keys(notifications).map(id =>
+        const notes = Object.keys(notifications).map(id =>
             (<Notification
               key={id}
               id={id}
@@ -35,7 +35,7 @@ class Notifications extends Component {
         );
         return (
             <NotifyPopupWindow>
-                {ret}
+                {notes}
             </NotifyPopupWindow>
         );
     }
@@ -47,6 +47,7 @@ class Notifications extends Component {
  */
 function mapStateToProps(state) {
     return {
+        notificationNum: state.station.notificationNum,
         notifications: state.station.notifications,
     };
 }

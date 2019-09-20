@@ -1,6 +1,8 @@
 import {
     SET_STATION,
     STATION_ERROR,
+    ADD_CODE,
+    SIGN_OUT,
 } from './dashboardActions';
 
 const noError = {
@@ -11,6 +13,7 @@ const noError = {
 
 const initialState = {
     station: null,
+    accounts: {},
     error: noError,
 };
 
@@ -20,6 +23,14 @@ const initialState = {
  */
 export default function helloReducer(state = initialState, action) {
     const { payload } = action;
+    const x = {
+        ...state,
+        accounts: {
+            ...state.accounts,
+            [payload.source]: payload.code,
+        },
+    };
+    console.log(x);
     switch (action.type) {
 
     case SET_STATION:
@@ -33,6 +44,14 @@ export default function helloReducer(state = initialState, action) {
         return {
             ...state,
             error: payload.error,
+        };
+    case ADD_CODE:
+        return {
+            ...state,
+            accounts: {
+                ...state.accounts,
+                [payload.source]: payload.code,
+            },
         };
 
     default:

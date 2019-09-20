@@ -9,6 +9,7 @@ import {
     SPOTIFY_ERROR,
     SET_SOUNDCLOUD_SONGS,
     SET_APPLE_MUSIC_SONGS,
+    SET_SPOTIFY_SONGS,
     SOUNDCLOUD_ERROR,
     APPLEMUSIC_ERROR,
     SEND_NOTIFICATION,
@@ -23,12 +24,18 @@ const noError = {
 };
 
 const initialState = {
-    player: {
-        song: {},
-        playing: false,
-        time: 0,
+    // player: {
+    //     song: {},
+    //     playing: false,
+    //     time: 0,
+    // },
+    station: {
+        playing: {
+            song: {},
+            playing: false,
+            time: 0,
+        }
     },
-    station: {},
     position: 0,
     loading: true,
     error: noError,
@@ -176,6 +183,22 @@ export default function helloReducer(state = initialState, action) {
                 },
             },
         };
+    case SET_SPOTIFY_SONGS:
+        if (state.search.value !== payload.query) {
+            return state;
+        }
+        return {
+            ...state,
+            search: {
+                ...state.search,
+                spotify: {
+                    loading: false,
+                    error: noError,
+                    songs: payload.songs,
+                    query: payload.query,
+                },
+            },
+        };
 
     case SOUNDCLOUD_ERROR:
         return {
@@ -224,7 +247,6 @@ export default function helloReducer(state = initialState, action) {
     case REMOVE_NOTIFICATION: {
         const newNotifications = { ...state.notifications };
         delete newNotifications[payload.id];
-
         return {
             ...state,
             notifications: newNotifications,

@@ -1,13 +1,13 @@
 {
   "name": "Stations",
   "description": "Stations",
+  "repository": "https://github.com/jpbogle/stations-frontend",
   "version": "0.0.0",
   "main": "src/js/app.js",
   "dependencies": {
     "browser-sync": "^2.18.12",
     "browserify-fs": "^1.0.0",
     "es6-promise": "4.1.0",
-    "eslint-plugin-react": "^7.1.0",
     "fs": "0.0.1-security",
     "gsap": "^2.0.1",
     "gulp-concat-css": "^2.3.0",

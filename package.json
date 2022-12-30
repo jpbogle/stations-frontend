@@ -58,7 +58,7 @@
     "gulp-uglify": "^3.0.0",
     "istanbul": "1.0.0-alpha.2",
     "jsdom": "9.5.0",
-    "mocha": "^6.2.0",
+    "mocha": "^10.2.0",
     "redux-devtools": "3.4.0",
     "redux-devtools-dock-monitor": "1.1.2",
     "redux-devtools-extension": "^2.13.8",
